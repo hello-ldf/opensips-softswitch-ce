@@ -1,0 +1,159 @@
+services:
+  mysql:
+    image: mysql
+    container_name: mysql
+    volumes:
+      - ./etc/mysql:/docker-entrypoint-initdb.d
+      - db:/var/lib/mysql
+    env_file:
+      - .env
+    healthcheck:
+      test: mysql -u ${MYSQL_USER} -p'${MYSQL_PASSWORD}' opensips -e 'SHOW TABLES LIKE "location"' 2>&1 | grep -q location
+      interval: 10s
+      timeout: 1s
+      retries: 5
+      start_period: 20s
+    networks:
+      localnetwork:
+        ipv4_address: ${MYSQL_IP}
+
+  opensips:
+    image: opensips/opensips:cp-all-tools
+    container_name: opensips
+    volumes:
+      - ./etc/opensips:/etc/opensips
+    ports:
+      - 5060:5060/udp
+      - 5060:5060/tcp
+    expose:
+      - 9060/tcp
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    command:
+      - -p /etc/opensips/substenv.sh
+    networks:
+      localnetwork:
+        ipv4_address: ${OPENSIPS_IP}
+
+  control-panel:
+    build:
+      context: ./etc/opensips-cp/image
+      dockerfile_inline: FROM opensips/opensips-cp:latest
+    container_name: opensips-cp
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - 80:80
+    expose:
+      - 9060/tcp
+    volumes:
+      - ./etc/opensips-cp/docker-entrypoint.d:/docker-entrypoint.d
+    networks:
+      localnetwork:
+        ipv4_address: ${CP_IP}
+
+  rtpproxy:
+    image: sippylabs/rtpproxy
+    container_name: rtpproxy
+    env_file:
+      - .env
+    ports:
+      - "${MINPORT}-${MAXPORT}:${MINPORT}-${MAXPORT}/udp"
+    networks:
+      localnetwork:
+        ipv4_address: ${RTPPROXY_IP}
+    command: -s udp:${RTPPROXY_IP}:${RTPPROXY_PORT} -l ${RTPPROXY_IP} -m ${MINPORT} -M ${MAXPORT} -A ${HOST_IP}
+
+  freeswitch:
+    image: opensips/freeswitch-ce
+    container_name: freeswitch
+    env_file:
+      - .env
+    volumes:
+      - ./etc/freeswitch/dialplan:/etc/freeswitch/dialplan
+    cap_add:
+      - SYS_NICE
+    networks:
+      localnetwork:
+        ipv4_address: ${FREESWITCH_IP}
+
+  # grafana:
+    # extends:
+      # file: ../homer-docker/all-in-one/docker-compose.yml
+      # service: grafana
+    # networks:
+      # localnetwork:
+        # ipv4_address: ${GRAFANA_IP}
+
+  # clickhouse-server: 
+    # extends:
+      # file: ../homer-docker/all-in-one/docker-compose.yml
+      # service: clickhouse-server
+    # networks:
+      # localnetwork:
+        # ipv4_address: ${CLICKHOUSE_IP}
+  
+  # qryn:
+    # extends:
+      # file: ../homer-docker/all-in-one/docker-compose.yml
+      # service: qryn
+    # networks:
+      # localnetwork:
+        # ipv4_address: ${QRYN_IP}
+  
+  # node-exporter:
+    # extends:
+      # file: ../homer-docker/all-in-one/docker-compose.yml
+      # service: node-exporter
+    # networks:
+      # localnetwork:
+        # ipv4_address: ${NE_IP}
+  
+  # vector:
+    # extends:
+      # file: ../homer-docker/all-in-one/docker-compose.yml
+      # service: vector
+    # networks:
+      # localnetwork:
+        # ipv4_address: ${VECTOR_IP}
+  
+  # mailhog:
+    # extends:
+      # file: ../homer-docker/all-in-one/docker-compose.yml
+      # service: mailhog
+    # networks:
+      # localnetwork:
+        # ipv4_address: ${MAILHOG_IP}
+  
+  # alertman:
+    # extends:
+      # file: ../homer-docker/all-in-one/docker-compose.yml
+      # service: alertman
+    # networks:
+      # localnetwork:
+        # ipv4_address: ${ALERTMAN_IP}
+  
+  # heplify-server:
+    # extends:
+      # file: ../homer-docker/all-in-one/docker-compose.yml
+      # service: heplify-server
+    # networks:
+      # localnetwork:
+        # ipv4_address: ${HEP_IP}
+
+volumes:
+  db:
+  grafana_data: {}
+  clickhouse_data: {}
+
+networks:
+  localnetwork:
+    ipam:
+      config:
+        - subnet: ${NETWORK}
