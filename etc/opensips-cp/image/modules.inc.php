@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2011 OpenSIPS Project
  *
- * This file is part of opensips-cp, a free Web Control Panel Application for 
+ * This file is part of opensips-cp, a free Web Control Panel Application for
  * OpenSIPS SIP server.
  *
  * opensips-cp is free software; you can redistribute it and/or modify
@@ -167,7 +167,7 @@ $config_modules 	= array (
 			"tracer"				=> array (
 				"enabled"		=> true,
 				"name"			=> "Tracer"
-            ),
+			),
 		)
 	),
 );
