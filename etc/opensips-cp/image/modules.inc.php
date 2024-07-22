@@ -125,7 +125,7 @@ $config_modules 	= array (
 				"name"			=> "MI Commands"
 			),
 			"monit"				=> array (
-				"enabled"		=> true,
+				"enabled"		=> false,
 				"name"			=> "Monit"
 			),
 			"rtpproxy"			=> array (
@@ -165,7 +165,7 @@ $config_modules 	= array (
 				"name"			=> "TCP Management"
 			),
 			"tracer"				=> array (
-				"enabled"		=> true,
+				"enabled"		=> false,
 				"name"			=> "Tracer"
 			),
 		)
