@@ -17,6 +17,10 @@ cp -u user_management/acls.inc.php /var/www/html/opensips-cp/config/tools/users/
 cp -u user_management/user_management_acls.php /var/www/html/opensips-cp/web/tools/users/user_management/
 
 add_column subscriber acls
+add_column subscriber cfaw_uri "varchar(128) DEFAULT '' NULL"
+add_column subscriber cfbs_uri "varchar(128) DEFAULT '' NULL"
+add_column subscriber cfna_uri "varchar(128) DEFAULT '' NULL"
+add_column subscriber cfnf_uri "varchar(128) DEFAULT '' NULL"
 
 mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
 	"INSERT INTO ocp_tools_config (module, param, value)
