@@ -1,7 +1,7 @@
 add_column() {
     table_name=$1
     column_name=$2
-    column_options=${3:-VARCHAR(64) DEFAULT "" NOT NULL}
+    column_options=${3:-'VARCHAR(255) DEFAULT NULL'}
 
     COLUMN_EXISTS=$(mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
         "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${table_name}' AND COLUMN_NAME = '${column_name}';")
