@@ -1,5 +1,8 @@
 #!/bin/bash
 
+cd "$(dirname "$0")"
+. functions
+
 echo "Configuring OpenSIPS CP User Management Tool ..."
 
 # Password Mode
@@ -10,22 +13,10 @@ mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE}
 		 SELECT 1 FROM ocp_tools_config WHERE module = 'user_management' AND param = 'passwd_mode');"
 
 # ACLs
-cp -u /docker-entrypoint.d/user_management/acls.inc.php /var/www/html/opensips-cp/config/tools/users/user_management/
-cp -u /docker-entrypoint.d/user_management/user_management_acls.php /var/www/html/opensips-cp/web/tools/users/user_management/
+cp -u user_management/acls.inc.php /var/www/html/opensips-cp/config/tools/users/user_management/
+cp -u user_management/user_management_acls.php /var/www/html/opensips-cp/web/tools/users/user_management/
 
-add_column() {
-    table_name=$1
-    column_name=$2
-    column_options=$3
-
-    COLUMN_EXISTS=$(mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
-        "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${table_name}' AND COLUMN_NAME = '${column_name}';")
-
-    [ -z "$COLUMN_EXISTS" ] && mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
-        "ALTER TABLE ${table_name} ADD COLUMN ${column_name} ${column_options};"
-}
-
-add_column subscriber acls 'VARCHAR(64) DEFAULT "" NOT NULL'
+add_column subscriber acls
 
 mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
 	"INSERT INTO ocp_tools_config (module, param, value)
