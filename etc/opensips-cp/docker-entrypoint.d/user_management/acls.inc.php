@@ -21,9 +21,15 @@
  */
 
 $config_user_acls = array (
-	"a" => "ACL1",
-	"b" => "ACL2",
-	"c" => "ACL3",
+	"n" => "Force NAT",
+	"p" => "Enable PSTN",
+	"d" => "DND",
+	"e" => "User Enabled",
+	"5" => "VM Permanent Redirect",
+	"6" => "VM Redirect Not Found",
+	"7" => "VM Redirect on Busy",
+	"8" => "VM Redirect on No Answer",
+	"9" => "VM Redirect on Failure",
 );
 
 ?>
