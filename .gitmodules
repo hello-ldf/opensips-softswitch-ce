@@ -1,3 +1,3 @@
 [submodule "etc/opensips"]
-    path = etc/opensips
-    url = ssh://git@gitlab.opensips-solutions.com:22322/ce/softswitch-config.git
+	path = etc/opensips
+	url = ssh://git@gitlab.opensips-solutions.com:22322/ce/softswitch-config.git
