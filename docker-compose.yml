@@ -41,7 +41,7 @@ services:
   control-panel:
     build:
       context: ./etc/opensips-cp/image
-      dockerfile_inline: FROM opensips/opensips-cp:master
+      dockerfile_inline: FROM opensips/opensips-cp:latest
     container_name: opensips-cp
     env_file:
       - .env
