@@ -21,3 +21,23 @@ add_parameter() {
 		 WHERE NOT EXISTS (
 		 SELECT 1 FROM ocp_tools_config WHERE module = '${module_name}' AND param = '${param_name}');"
 }
+
+extract_table_name() {
+    local sql_file="$1"
+
+    table_name=$(grep -m 1 -oP 'CREATE TABLE \K\w+' $sql_file)
+    
+    echo $table_name
+}
+
+add_table() {
+    local sql_file="$1"
+    local table_name=$(extract_table_name $sql_file)
+
+    echo "Adding tables from $sql_file"
+
+    TABLE_EXISTS=$(mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
+        "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '${MYSQL_DATABASE}' AND TABLE_NAME = '${table_name}';")
+
+    [ -z "$TABLE_EXISTS" ] && mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} < $sql_file
+}

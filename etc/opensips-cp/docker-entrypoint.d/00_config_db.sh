@@ -1,12 +1,33 @@
 #!/bin/bash
+
+cd "$(dirname "$0")"
+. functions
+
 echo "Configuring OpenSIPS-CP database connection..."
 
 sed -i "s/localhost/${MYSQL_IP}/g" /var/www/html/opensips-cp/config/db.inc.php
 
 sed -i "s/127.0.0.1/${OPENSIPS_IP}/g" /var/www/html/opensips-cp/config/db_schema.mysql
 
-TABLE_EXISTS=$(mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -e "SHOW TABLES LIKE 'ocp_admin_privileges';" -D ${MYSQL_DATABASE})
+apt-get update && apt-get install -y curl
 
-if [ -z "$TABLE_EXISTS" ]; then
-    mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} < /var/www/html/opensips-cp/config/db_schema.mysql
-fi
+curl https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg
+echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bullseye 3.4-releases" >/etc/apt/sources.list.d/opensips.list
+echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bullseye cli-nightly" >/etc/apt/sources.list.d/opensips-cli.list
+
+apt-get update && apt-get install -y opensips-mysql-module
+
+until mysqladmin ping -h ${MYSQL_IP} --silent; do
+    echo "MySQL server is not yet available. Retrying in 1 second..."
+    sleep 1
+done
+
+add_table /usr/share/opensips/mysql/standard-create.sql
+
+rm -f /usr/share/opensips/mysql/standard-create.sql
+
+for file in /usr/share/opensips/mysql/*.sql; do
+    add_table $file
+done
+
+add_table /var/www/html/opensips-cp/config/db_schema.mysql
