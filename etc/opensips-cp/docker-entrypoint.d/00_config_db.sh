@@ -12,10 +12,10 @@ sed -i "s/127.0.0.1/${OPENSIPS_IP}/g" /var/www/html/opensips-cp/config/db_schema
 apt-get update && apt-get install -y curl
 
 curl https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg
-echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bullseye 3.4-releases" >/etc/apt/sources.list.d/opensips.list
+echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bullseye 3.6-nightly" >/etc/apt/sources.list.d/opensips.list
 echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bullseye cli-nightly" >/etc/apt/sources.list.d/opensips-cli.list
 
-apt-get update && apt-get install -y opensips-mysql-module
+apt-get update && apt-get install -y opensips-mysql-dbschema
 
 until mysqladmin ping -h ${MYSQL_IP} --silent; do
     echo "MySQL server is not yet available. Retrying in 1 second..."
