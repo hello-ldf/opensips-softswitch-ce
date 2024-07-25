@@ -13,7 +13,6 @@ apt-get update && apt-get install -y curl
 
 curl https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg
 echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bullseye 3.6-nightly" >/etc/apt/sources.list.d/opensips.list
-echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bullseye cli-nightly" >/etc/apt/sources.list.d/opensips-cli.list
 
 apt-get update && apt-get install -y opensips-mysql-dbschema
 
