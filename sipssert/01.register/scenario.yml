@@ -8,7 +8,7 @@ tasks:
     password: "{{ caller_password }}"
     config_file: scripts/sipp-register.xml
     ip: {{ caller_ip }}
-    port: 5061
+    port: {{ caller_port }}
 
   - name: MI check Register caller
     type: opensips-cli
@@ -25,7 +25,7 @@ tasks:
     password: "{{ callee_password }}"
     config_file: scripts/sipp-register.xml
     ip: {{ callee_ip }}
-    port: 5062
+    port: {{ callee_port }}
 
   - name: MI check Register callee
     type: opensips-cli

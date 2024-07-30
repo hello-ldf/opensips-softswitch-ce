@@ -1,8 +1,10 @@
 caller: caller
 caller_password: 123456
+caller_port: 5065
 callee: callee
-default_domain: domain.sip
 callee_password: 123456
+caller_port: 5066
+default_domain: domain.sip
 opensips_ip: 192.168.1.129
 opensips_port: 5060
 caller_ip: 192.168.1.129
