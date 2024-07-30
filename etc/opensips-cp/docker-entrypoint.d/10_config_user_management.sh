@@ -12,6 +12,7 @@ add_parameter user_management passwd_mode '1'
 cp -u user_management/acls.inc.php /var/www/html/opensips-cp/config/tools/users/user_management/
 cp -u user_management/user_management_acls.php /var/www/html/opensips-cp/web/tools/users/user_management/
 
+add_column subscriber cli
 add_column subscriber acls 'varchar(32) DEFAULT "" NOT NULL'
 add_column subscriber cfaw_uri
 add_column subscriber cfbs_uri
