@@ -1,6 +1,9 @@
 services:
   mysql:
-    image: mysql
+    build:
+      dockerfile_inline: |
+        FROM mysql:latest
+        RUN rpm -i https://yum.opensips.org/3.6/nightly/el/9/x86_64/opensips-mysql-dbschema-3.6.0.dev.20240725.f16b47814-1.el9.x86_64.rpm
     container_name: mysql
     volumes:
       - ./etc/mysql:/docker-entrypoint-initdb.d
