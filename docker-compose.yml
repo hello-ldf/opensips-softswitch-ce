@@ -5,6 +5,8 @@ services:
     volumes:
       - ./etc/mysql:/docker-entrypoint-initdb.d
       - db:/var/lib/mysql
+    ports:
+      - 3306:3306
     env_file:
       - .env
     healthcheck:
@@ -25,6 +27,7 @@ services:
     ports:
       - 5060:5060/udp
       - 5060:5060/tcp
+      - 8888:8888
     expose:
       - 9060/tcp
     env_file:
