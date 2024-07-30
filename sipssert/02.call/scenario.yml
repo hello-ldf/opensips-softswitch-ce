@@ -8,7 +8,7 @@ tasks:
     password: "{{ caller_password }}"
     config_file: scripts/caller.xml
     ip: {{ caller_ip }}
-    port: 5061
+    port: {{ caller_port }}
   
   - name: Callee UAC
     type: uas-sipp
@@ -16,7 +16,7 @@ tasks:
     password: "{{ callee_password }}"
     config_file: scripts/callee.xml
     ip: {{ callee_ip }}
-    port: 5062
+    port: {{ callee_port }}
     require:
       - started:
           task: Caller UAC
