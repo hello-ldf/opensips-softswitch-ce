@@ -3,10 +3,10 @@ add_column() {
     column_name=$2
     column_options=${3:-'VARCHAR(255) DEFAULT NULL'}
 
-    COLUMN_EXISTS=$(mysql -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
+    COLUMN_EXISTS=$(mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
         "SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '${table_name}' AND COLUMN_NAME = '${column_name}';")
 
-    [ -z "$COLUMN_EXISTS" ] && mysql -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
+    [ -z "$COLUMN_EXISTS" ] && mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
         "ALTER TABLE ${table_name} ADD COLUMN ${column_name} ${column_options};"
 }
 
@@ -15,11 +15,19 @@ add_parameter() {
     param_name=$2
     value=$3
 
-    mysql -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
+    mysql -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} -e \
 	"INSERT INTO ocp_tools_config (module, param, value)
 	 SELECT '${module_name}', '${param_name}', ${value}
 		 WHERE NOT EXISTS (
 		 SELECT 1 FROM ocp_tools_config WHERE module = '${module_name}' AND param = '${param_name}');"
+}
+
+extract_table_name() {
+    local sql_file="$1"
+
+    table_name=$(grep -m 1 -oP 'CREATE TABLE\s+\K[`'\'']?(\w+)[`'\'']?' $sql_file | grep -oP '[`'\'']?\K\w+')
+    
+    echo $table_name
 }
 
 add_table() {
@@ -27,5 +35,5 @@ add_table() {
 
     echo "Adding tables from $sql_file"
     
-    mysql --force -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} < $sql_file
+    mysql --force -h ${MYSQL_IP} -u ${MYSQL_USER} -p"${MYSQL_PASSWORD}" -D ${MYSQL_DATABASE} < $sql_file
 }
