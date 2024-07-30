@@ -1,0 +1,9 @@
+---
+
+defaults:
+  uac-sipp:
+    proxy: {{ opensips_ip }}:{{ opensips_port }}
+    keys:
+      domain: {{ default_domain }}
+      caller: {{ caller }}
+      callee: {{ callee }}

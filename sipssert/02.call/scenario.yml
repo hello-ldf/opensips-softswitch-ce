@@ -1,0 +1,22 @@
+---
+timeout: 40
+
+tasks:
+  - name: Caller UAC
+    type: uac-sipp
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    config_file: scripts/caller.xml
+    ip: {{ caller_ip }}
+    port: 5061
+  
+  - name: Callee UAC
+    type: uas-sipp
+    username: {{ callee }}
+    password: "{{ callee_password }}"
+    config_file: scripts/callee.xml
+    ip: {{ callee_ip }}
+    port: 5062
+    require:
+      - started:
+          task: Caller UAC
