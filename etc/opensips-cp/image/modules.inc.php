@@ -85,7 +85,7 @@ $config_modules 	= array (
 				"name"			=> "Callcenter"
 			),
 			"cdrviewer"			=> array (
-				"enabled"		=> false,
+				"enabled"		=> true,
 				"name"			=> "CDR Viewer"
 			),
 			"dialog"			=> array (
