@@ -2,6 +2,16 @@
 timeout: 30
 
 tasks:
+  - name: Enable caller
+    type: mysql-client
+    script: scripts/enable_user.sh
+    args: {{ caller }} {{ default_domain }}
+    
+  - name: Enable callee
+    type: mysql-client
+    script: scripts/enable_user.sh
+    args: {{ callee }} {{ default_domain }}
+
   - name: Register caller
     type: uac-sipp
     username: {{ caller }}
@@ -9,6 +19,10 @@ tasks:
     config_file: scripts/sipp-register.xml
     ip: {{ caller_ip }}
     port: {{ caller_port }}
+    require:
+      after:
+        task: Enable caller
+        wait: 2
 
   - name: MI check Register caller
     type: opensips-cli
@@ -26,6 +40,10 @@ tasks:
     config_file: scripts/sipp-register.xml
     ip: {{ callee_ip }}
     port: {{ callee_port }}
+    require:
+      after:
+        task: Enable callee
+        wait: 2
 
   - name: MI check Register callee
     type: opensips-cli

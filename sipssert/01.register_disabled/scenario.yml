@@ -1,0 +1,37 @@
+---
+timeout: 30
+
+tasks:
+  - name: Register caller
+    type: uac-sipp
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ caller_ip }}
+    port: {{ caller_port }}
+
+  - name: MI check Not Registered caller
+    type: opensips-cli
+    script: scripts/check-register.py
+    args: {{ caller }}
+    require:
+      after:
+        task: Register caller
+        wait: 1
+
+  - name: Register callee
+    type: uac-sipp
+    username: {{ callee }}
+    password: "{{ callee_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ callee_ip }}
+    port: {{ callee_port }}
+
+  - name: MI check Not Registered callee
+    type: opensips-cli
+    script: scripts/check-register.py
+    args: {{ callee }}
+    require:
+      after:
+        task: Register callee
+        wait: 1
