@@ -57,6 +57,9 @@ services:
       - 80:80
     expose:
       - 9060/tcp
+    depends_on:
+      mysql:
+        condition: service_healthy
     volumes:
       - ./etc/opensips-cp/docker-entrypoint.d:/docker-entrypoint.d
       - type: bind
