@@ -46,7 +46,7 @@ services:
       localnetwork:
         ipv4_address: ${OPENSIPS_IP}
 
-  control-panel:
+  opensips-cp:
     build:
       context: ./etc/opensips-cp/image
       dockerfile_inline: FROM opensips/opensips-cp:latest
