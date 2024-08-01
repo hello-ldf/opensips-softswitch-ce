@@ -14,7 +14,7 @@
        From: <sip:[service]@[domain]>;tag=[call_number]
        Contact: <sip:[service]@[local_ip]:[local_port]>;transport=[transport]
        Expires: 5
-       Call-ID: reg-[service]:///[call_id]
+       Call-ID: 01.register-disabled:///[call_id]
        Supported: path
        Max-Forwards: 70
        CSeq: 1 REGISTER
@@ -28,22 +28,6 @@
  
   <send>
      <![CDATA[
-
-       ACK sip:[domain] SIP/2.0
-       [last_Via:]
-       To: <sip:[service]@[domain]>;tag=123456
-       From: <sip:[service]@[domain]>;tag=[call_number]
-       Contact: <sip:[service]@[local_ip]:[local_port]>;transport=[transport]
-       Call-ID: reg-[service]:///[call_id]
-       CSeq: 1 ACK
-       Max-Forwards: 70
-       Content-Length: 0
-
-     ]]>
-  </send>
- 
-  <send>
-     <![CDATA[
  
        REGISTER sip:[domain] SIP/2.0
        Via: SIP/2.0/[transport] [local_ip]:[local_port]
@@ -52,7 +36,7 @@
        Contact: <sip:[service]@[local_ip]:[local_port]>;transport=[transport]
        Expires: 5
        [authentication]
-       Call-ID: reg-[service]:///[call_id]
+       Call-ID: 01.register-disabled:///[call_id]
        Supported: path
        Max-Forwards: 70
        CSeq: 2 REGISTER

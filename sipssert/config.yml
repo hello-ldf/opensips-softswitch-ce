@@ -12,8 +12,39 @@ init_tasks:
     options:
       database_user_url: mysql://opensips:opensipsrw@{{ opensips_ip }}/opensips
 
+  - name: Enable caller
+    type: mysql-client
+    script: init_tasks/enable_user.sh
+    args: {{ caller }} {{ default_domain }}
+    require:
+      after:
+        task: Create caller
+        wait: 1
+    
+  - name: Enable callee
+    type: mysql-client
+    script: init_tasks/enable_user.sh
+    args: {{ callee }} {{ default_domain }}
+    require:
+      after:
+        task: Create callee
+        wait: 1
+
 
 cleanup_tasks:
+  - name: Delete caller AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
+    options:
+      database_user_url: mysql://opensips:opensipsrw@{{ opensips_ip }}/opensips
+
+  - name: Delete callee AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
+    options:
+      database_user_url: mysql://opensips:opensipsrw@{{ opensips_ip }}/opensips
+
+
   - name: Delete caller
     type: opensips-cli
     args: -d -x user delete {{ caller }}@{{ default_domain }}
