@@ -1,12 +1,30 @@
 ---
 init_tasks:
+  - name: Add test domain
+    type: mysql-client
+    script: init_tasks/add_domain.sh
+    args: {{ default_domain }}
+  
+  - name: Reload domains
+    type: opensips-cli
+    args: -d -x mi domain_reload
+    require:
+      after:
+        task: Add test domain
+
   - name: Create caller
     type: opensips-cli
     args: -d -x user add {{ caller }}@{{ default_domain }} {{ caller_password }}
+    require:
+      after:
+        task: Reload domains
 
   - name: Create callee
     type: opensips-cli
     args: -d -x user add {{ callee }}@{{ default_domain }} {{ callee_password }}
+    require:
+      after:
+        task: Reload domains
 
   - name: Enable caller
     type: mysql-client
@@ -35,6 +53,23 @@ cleanup_tasks:
   - name: Delete callee
     type: opensips-cli
     args: -d -x user delete {{ callee }}@{{ default_domain }}
+
+  - name: Delete test domain
+    type: mysql-client
+    script: cleanup_tasks/remove_domain.sh
+    args: {{ default_domain }}
+    require:
+      after:
+        task: Delete caller
+      after:
+        task: Delete callee
+  
+  - name: Reload domains
+    type: opensips-cli
+    args: -d -x mi domain_reload
+    require:
+      after:
+        task: Delete test domain
 
 
 defaults:
