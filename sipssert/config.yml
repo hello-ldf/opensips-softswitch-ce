@@ -3,14 +3,10 @@ init_tasks:
   - name: Create caller
     type: opensips-cli
     args: -d -x user add {{ caller }}@{{ default_domain }} {{ caller_password }}
-    options:
-      database_user_url: mysql://opensips:opensipsrw@{{ opensips_ip }}/opensips
 
   - name: Create callee
     type: opensips-cli
     args: -d -x user add {{ callee }}@{{ default_domain }} {{ callee_password }}
-    options:
-      database_user_url: mysql://opensips:opensipsrw@{{ opensips_ip }}/opensips
 
   - name: Enable caller
     type: mysql-client
@@ -35,33 +31,25 @@ cleanup_tasks:
   - name: Delete caller AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
-    options:
-      database_user_url: mysql://opensips:opensipsrw@{{ opensips_ip }}/opensips
 
   - name: Delete callee AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
-    options:
-      database_user_url: mysql://opensips:opensipsrw@{{ opensips_ip }}/opensips
-
 
   - name: Delete caller
     type: opensips-cli
     args: -d -x user delete {{ caller }}@{{ default_domain }}
-    options:
-      database_user_url: mysql://opensips:opensipsrw@{{ opensips_ip }}/opensips
-
 
   - name: Delete callee
     type: opensips-cli
     args: -d -x user delete {{ callee }}@{{ default_domain }}
-    options:
-      database_user_url: mysql://opensips:opensipsrw@{{ opensips_ip }}/opensips
 
 
 defaults:
   opensips-cli:
     mi_ip: {{ opensips_ip }}
+    options:
+      database_user_url: mysql://{{ mysql_user }}:{{ mysql_password }}@{{ opensips_ip }}/{{ database }}
   uac-sipp:
     proxy: {{ opensips_ip }}:{{ opensips_port }}
     keys:
