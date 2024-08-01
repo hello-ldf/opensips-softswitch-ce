@@ -46,7 +46,7 @@
     <![CDATA[
     
       ACK sip:[callee]@[domain];transport=[transport] SIP/2.0
-      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch];rport
+      [last_Via:]
       Max-Forwards: 70
       Contact: <sip:[caller]@[local_ip]:[local_port]>
       To: <sip:[callee]@[domain]>
