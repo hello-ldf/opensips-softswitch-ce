@@ -2,6 +2,22 @@
 timeout: 40
 
 tasks:
+  - name: Register caller
+    type: uac-sipp
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ caller_ip }}
+    port: {{ caller_port }}
+
+  - name: Register callee
+    type: uac-sipp
+    username: {{ callee }}
+    password: "{{ callee_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ callee_ip }}
+    port: {{ callee_port }}
+
   - name: Caller UAC
     type: uac-sipp
     username: {{ caller }}
@@ -9,6 +25,9 @@ tasks:
     config_file: scripts/caller.xml
     ip: {{ caller_ip }}
     port: {{ caller_port }}
+    require:
+      - after:
+          task: Register caller
   
   - name: Callee UAC
     type: uas-sipp
@@ -18,5 +37,23 @@ tasks:
     ip: {{ callee_ip }}
     port: {{ callee_port }}
     require:
+      - after:
+          task: Register callee
       - started:
           task: Caller UAC
+
+  - name: Delete caller AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
+    require:
+      after:
+        task: Caller UAC
+        wait: 1
+
+  - name: Delete callee AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
+    require:
+      after:
+        task: Callee UAC
+        wait: 1
