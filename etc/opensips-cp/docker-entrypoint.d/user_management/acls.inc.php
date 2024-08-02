@@ -25,6 +25,7 @@ $config_user_acls = array (
 	"N" => "Force NAT",
 	"P" => "Enable PSTN",
 	"D" => "DND",
+    "4" => "VM Enabled",
 	"5" => "VM Permanent Redirect",
 	"6" => "VM Redirect Not Found",
 	"7" => "VM Redirect on Busy",
