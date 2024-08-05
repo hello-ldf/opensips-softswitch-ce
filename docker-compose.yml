@@ -88,6 +88,7 @@ services:
       - .env
     volumes:
       - ./etc/freeswitch/dialplan:/etc/freeswitch/dialplan
+      - ./etc/freeswitch/conf:/docker-entrypoint.d
     cap_add:
       - SYS_NICE
     networks:
