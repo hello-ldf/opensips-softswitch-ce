@@ -76,7 +76,7 @@
   <!-- to be used in place of the '[last_*]' keyword.                   -->
   <!--
   -->
-   <send retrans="500">
+  <send retrans="500">
     <![CDATA[
 
       SIP/2.0 486 Busy Here
