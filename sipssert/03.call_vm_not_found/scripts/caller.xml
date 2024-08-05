@@ -20,7 +20,7 @@
       Supported: replaces, norefersub, extended-refer, timer, sec-agree, outbound, path, X-cisco-serviceuri
       Allow-Events: presence, kpml, talk, as-feature-event
       Content-Length: [len]
-      
+
       v=0
       o=Z 0 21195650 IN IP4 192.168.1.129
       s=Z
@@ -44,7 +44,7 @@
 
   <send>
     <![CDATA[
-    
+
       ACK sip:[callee]@[domain];transport=[transport] SIP/2.0
       [last_Via:]
       Max-Forwards: 70
@@ -74,7 +74,7 @@
       Supported: replaces, norefersub, extended-refer, timer, sec-agree, outbound, path, X-cisco-serviceuri
       Allow-Events: presence, kpml, talk, as-feature-event
       Content-Length: [len]
-      
+
       v=0
       o=Z 0 21457613 IN IP4 192.168.1.129
       s=Z

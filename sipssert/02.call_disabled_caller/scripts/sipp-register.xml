@@ -4,10 +4,10 @@
 <scenario name="UAC: Registration Scenario">
   <Global variables="domain" />
   <Reference variables="domain" />
- 
+
   <send>
      <![CDATA[
- 
+
        REGISTER sip:[domain] SIP/2.0
        Via: SIP/2.0/[transport] [local_ip]:[local_port]
        To: <sip:[service]@[domain]>
@@ -19,16 +19,16 @@
        Max-Forwards: 70
        CSeq: 1 REGISTER
        Content-Length: 0
- 
+
      ]]>
   </send>
- 
+
   <recv response="401" auth="true">
   </recv>
- 
+
   <send>
      <![CDATA[
- 
+
        REGISTER sip:[domain] SIP/2.0
        Via: SIP/2.0/[transport] [local_ip]:[local_port]
        To: <sip:[service]@[domain]>
@@ -41,11 +41,11 @@
        Max-Forwards: 70
        CSeq: 2 REGISTER
        Content-Length: 0
- 
+
      ]]>
   </send>
- 
- 
+
+
   <recv response="200">
   </recv>
 
