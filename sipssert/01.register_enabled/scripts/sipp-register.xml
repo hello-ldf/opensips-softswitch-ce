@@ -13,7 +13,7 @@
        To: <sip:[service]@[domain]>
        From: <sip:[service]@[domain]>;tag=[call_number]
        Contact: <sip:[service]@[local_ip]:[local_port]>;transport=[transport]
-       Expires: 5
+       Expires: 10
        Call-ID: 01.register_enabled-[service]:///[call_id]
        Supported: path
        Max-Forwards: 70
@@ -34,7 +34,7 @@
        To: <sip:[service]@[domain]>
        From: <sip:[service]@[domain]>;tag=[call_number]
        Contact: <sip:[service]@[local_ip]:[local_port]>;transport=[transport]
-       Expires: 5
+       Expires: 10
        [authentication]
        Call-ID: 01.register_enabled-[service]:///[call_id]
        Supported: path
