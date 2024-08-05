@@ -1,0 +1,80 @@
+---
+timeout: 40
+
+tasks:
+  - name: Register caller
+    type: uac-sipp
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ caller_ip }}
+    port: {{ caller_port }}
+
+  - name: Register callee
+    type: uac-sipp
+    username: {{ callee }}
+    password: "{{ callee_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ callee_ip }}
+    port: {{ callee_port }}
+
+  - name: Enable VM BUSY for callee
+    type: mysql-client
+    script: scripts/enable_vm.sh
+    args: {{ callee }} {{ default_domain }}
+    require:
+      after:
+        task: Register callee
+        wait: 1
+
+  - name: Caller UAC
+    type: uac-sipp
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    config_file: scripts/caller.xml
+    ip: {{ caller_ip }}
+    port: {{ caller_port }}
+    require:
+      - after:
+          task: Enable VM BUSY for callee
+          wait: 1
+      - after:
+          task: Register caller
+          wait: 1
+
+  - name: Callee UAC
+    type: uac-sipp
+    username: {{ callee }}
+    password: "{{ callee_password }}"
+    config_file: scripts/callee.xml
+    ip: {{ callee_ip }}
+    port: {{ callee_port }}
+    require:
+      - after:
+          task: Enable VM BUSY for callee
+          wait: 1
+  
+  - name: Disable VM BUSY for callee
+    type: mysql-client
+    script: scripts/disable_vm.sh
+    args: {{ callee }} {{ default_domain }}
+    require:
+      after:
+        task: Caller UAC
+        wait: 1
+
+  - name: Delete caller AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
+    require:
+      after:
+        task: Caller UAC
+        wait: 1
+  
+  - name: Delete callee AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
+    require:
+      after:
+        task: Disable VM BUSY for callee
+        wait: 1
