@@ -116,7 +116,7 @@
       To: <sip:[callee]@[domain]>[peer_tag_param]
       From: <sip:[caller]@[domain];transport=[transport]>;tag=[call_number]
       [routes]
-      CSeq: 1 ACK
+      CSeq: 2 ACK
       Contact: <sip:[caller]@[local_ip]:[local_port]>
       Call-ID: 03.call_vm_not_found:///[call_id]
       Max-Forwards: 70
@@ -124,6 +124,26 @@
 
     ]]>
   </send>
+
+  <send>
+    <![CDATA[
+
+      BYE [next_url] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch];rport
+      To: <sip:[callee]@[domain]>[peer_tag_param]
+      From: <sip:[caller]@[domain];transport=[transport]>;tag=[call_number]
+      CSeq: 3 BYE
+      Contact: <sip:[caller]@[local_ip]:[local_port]>
+      Call-ID: 03.call_vm_not_found:///[call_id]
+      Max-Forwards: 70
+      [authentication]
+      Content-Length: 0
+
+    ]]>
+  </send>
+
+  <recv response="200">
+  </recv>
 
   <!-- definition of the response time repartition table (unit is ms)   -->
   <ResponseTimeRepartition value="500, 1000, 1500, 2000"/>
