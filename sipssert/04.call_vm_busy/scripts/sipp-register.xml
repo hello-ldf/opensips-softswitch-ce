@@ -14,7 +14,7 @@
        From: <sip:[service]@[domain]>;tag=[call_number]
        Contact: <sip:[service]@[local_ip]:[local_port]>;transport=[transport]
        Expires: 10
-       Call-ID: 04.call_vm_busy-register-[service]:///[call_id]
+       Call-ID: [scenario]-register-[service]:///[call_id]
        Supported: path
        Max-Forwards: 70
        CSeq: 1 REGISTER
@@ -36,7 +36,7 @@
        Contact: <sip:[service]@[local_ip]:[local_port]>;transport=[transport]
        Expires: 10
        [authentication]
-       Call-ID: 04.call_vm_busy-register-[service]:///[call_id]
+       Call-ID: [scenario]-register-[service]:///[call_id]
        Supported: path
        Max-Forwards: 70
        CSeq: 2 REGISTER
