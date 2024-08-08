@@ -38,6 +38,8 @@ tasks:
     config_file: scripts/caller.xml
     ip: {{ caller_ip }}
     port: {{ caller_port }}
+    keys:
+      task_tag: nocallee
     require:
       after: Register caller
       after: Register call forward user
@@ -73,6 +75,8 @@ tasks:
     config_file: scripts/caller.xml
     ip: {{ caller_ip }}
     port: {{ caller_port }}
+    keys:
+      task_tag: withcallee
     require:
       after: Register Callee
   
