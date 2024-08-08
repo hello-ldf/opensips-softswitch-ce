@@ -1,0 +1,1 @@
+mysql opensips -e "UPDATE subscriber SET cfna_uri='' WHERE username='$1' AND domain='$2';"
