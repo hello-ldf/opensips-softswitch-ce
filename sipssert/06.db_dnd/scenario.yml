@@ -1,0 +1,82 @@
+---
+timeout: 60
+
+tasks:
+  - name: Register caller
+    type: uac-sipp
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ caller_ip }}
+    port: {{ caller_port }}
+
+  - name: Register callee
+    type: uac-sipp
+    username: {{ callee }}
+    password: "{{ callee_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ callee_ip }}
+    port: {{ callee_port }}
+  
+  - name: DND ACL callee
+    type: mysql-client
+    script: scripts/set_user_dnd.sh
+    args: {{ callee }} {{ default_domain }}
+    require:
+      after:
+        task: Register callee
+
+  - name: Caller UAC Busy
+    type: uac-sipp
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    config_file: scripts/caller_busy.xml
+    ip: {{ caller_ip }}
+    port: {{ caller_port }}
+    require:
+      - after:
+          task: DND ACL callee
+  
+  - name: DND OFF ACL callee
+    type: mysql-client
+    script: scripts/unset_user_dnd.sh
+    args: {{ callee }} {{ default_domain }}
+    require:
+      after:
+        task: Caller UAC Busy
+
+  - name: Caller UAC
+    type: uac-sipp
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    config_file: scripts/caller.xml
+    ip: {{ caller_ip }}
+    port: {{ caller_port }}
+    require:
+      - after:
+          task: DND OFF ACL callee
+  
+  - name: Callee UAC
+    type: uac-sipp
+    username: {{ callee }}
+    password: "{{ callee_password }}"
+    config_file: scripts/callee.xml
+    ip: {{ callee_ip }}
+    port: {{ callee_port }}
+    require:
+      - after:
+          task: DND OFF ACL callee
+
+  - name: Delete caller AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
+    require:
+      after:
+        task: Caller UAC
+
+  - name: Delete callee AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
+    require:
+      after:
+        task: Callee UAC
