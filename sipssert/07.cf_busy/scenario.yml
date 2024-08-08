@@ -1,0 +1,114 @@
+---
+timeout: 60
+
+tasks:
+  - name: Enable call forward user
+    type: mysql-client
+    script: scripts/enable_user.sh
+    args: {{ cf_user }} {{ default_domain }}
+
+  - name: Register Caller
+    type: uac-sipp
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ caller_ip }}
+    port: {{ caller_port }}
+
+  - name: Register call forward user
+    type: uac-sipp
+    username: {{ cf_user }}
+    password: "{{ cf_pass }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ cf_ip }}
+    port: {{ cf_port }}
+    require:
+      after:
+        task: Enable call forward user
+  
+  - name: Register Callee
+    type: uac-sipp
+    username: {{ callee }}
+    password: "{{ callee_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ callee_ip }}
+    port: {{ callee_port }}
+
+  - name: Add CF Busy URI for callee
+    type: mysql-client
+    script: scripts/add_cf_uri.sh
+    args: {{ callee }} {{ default_domain }} sip:{{ cf_user }}@{{ default_domain }}
+
+  - name: Caller UAC
+    type: uac-sipp
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    config_file: scripts/caller.xml
+    ip: {{ caller_ip }}
+    port: {{ caller_port }}
+    require:
+      after: Register Caller
+      after: Register call forward user
+      after: Register Callee
+      after: Add CF Busy URI for callee
+  
+  - name: CF User UAC
+    type: uas-sipp
+    username: {{ cf_user }}
+    password: "{{ cf_pass }}"
+    config_file: scripts/cf-user.xml
+    ip: {{ cf_ip }}
+    port: {{ cf_port }}
+    require:
+      after: Register Caller
+      after: Register call forward user
+      after: Register Callee
+      after: Add CF Busy URI for callee
+
+  - name: Callee UAC
+    type: uas-sipp
+    username: {{ callee }}
+    password: "{{ callee_password }}"
+    config_file: scripts/callee.xml
+    ip: {{ callee_ip }}
+    port: {{ callee_port }}
+    require:
+      after: Register Caller
+      after: Register call forward user
+      after: Register Callee
+      after: Add CF Busy URI for callee  
+
+  - name: Remove CF Busy URI for callee
+    type: mysql-client
+    script: scripts/remove_cf_uri.sh
+    args: {{ callee }} {{ default_domain }}
+    require:
+      after: Caller UAC
+
+  - name: Disable call forward user
+    type: mysql-client
+    script: scripts/disable_user.sh
+    args: {{ cf_user }} {{ default_domain }}
+    require:
+      after: Remove CF Busy URI for callee
+  
+  - name: Delete caller AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
+    require:
+      after:
+        task: Disable call forward user
+
+  - name: Delete callee AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
+    require:
+      after:
+        task: Disable call forward user
+  
+  - name: Delete call forward user AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ cf_user }}@{{ default_domain }}
+    require:
+      after:
+        task: Disable call forward user
