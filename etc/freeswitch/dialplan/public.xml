@@ -21,7 +21,7 @@
     <extension name="activate_dnd">
       <condition field="destination_number" expression="^ANN_SERVICE_SET_DND$">
         <action application="answer"/>
-        <action application="playback" data="/usr/share/freeswitch/sounds/en/us/callie/ivr/48000/ivr-dnd_activated.wav"/>
+        <action application="playback" data="ivr/ivr-dnd_activated.wav"/>
         <action application="sleep" data="1000"/>
         <action application="hangup"/>
       </condition>
@@ -30,7 +30,7 @@
     <extension name="cancel_dnd">
       <condition field="destination_number" expression="^ANN_SERVICE_RESET_DND$">
         <action application="answer"/>
-        <action application="playback" data="/usr/share/freeswitch/sounds/en/us/callie/ivr/48000/ivr-dnd_cancelled.wav"/>
+        <action application="playback" data="ivr/ivr-dnd_cancelled.wav"/>
         <action application="sleep" data="1000"/>
         <action application="hangup"/>
       </condition>
