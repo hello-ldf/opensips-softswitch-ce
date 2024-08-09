@@ -7,6 +7,7 @@ This project contains a fully functional OpenSIPS setup used as a SoftSwitch.
 ### Installation
 
 Clone the repository:
+
 ``` shell
 git clone --recursive https://gitlab.opensips-solutions.com:44344/ce/softswitch.git
 ```
@@ -22,7 +23,7 @@ There is the `.env` file where you can set up the following variables:
 - `MYSQL_DATABASE`: database name for OpenSIPS
 - `MYSQL_USER`: database user for OpenSIPS
 - `MYSQL_PASSWORD`: password for OpenSIPS database user
-- `CP_IP`: IP address of the Opensips-CP container
+- `CP_IP`: IP address of the OpenSIPS-CP container
 - `RTPPROXY_IP`: IP address of the RTPProxy container
 - `RTPPROXY_PORT`: listening port for RTPProxy
 - `MINPORT`: minimum of the port range for RTPProxy
@@ -35,6 +36,7 @@ There is the `.env` file where you can set up the following variables:
 
 First, you need to put your IP address in the `HOST_IP` variable in `.env` file (**very important**).
 Then, you can start the SoftSwitch with the following command:
+
 ``` shell
 docker-composer up --build
 ```
