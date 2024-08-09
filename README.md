@@ -4,7 +4,7 @@ This project contains a fully functional OpenSIPS setup used as a SoftSwitch.
 
 ## Getting started
 
-#### Installation
+### Installation
 
 Clone the repository:
 ``` shell
@@ -31,7 +31,7 @@ There is the `.env` file where you can set up the following variables:
 - `ENABLE_HOMER`: enable or disable Homer SIP capture (`yes`/`no`)
 - `DEFAULT_DOMAIN`: a default domain provided for OpenSIPS
 
-#### Get up and running
+### Get up and running
 
 First, you need to put your IP address in the `HOST_IP` variable in `.env` file (**very important**).
 Then, you can start the SoftSwitch with the following command:
