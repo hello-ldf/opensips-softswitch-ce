@@ -2,11 +2,6 @@
 timeout: 60
 
 tasks:
-  - name: Enable call forward user
-    type: mysql-client
-    script: scripts/enable_user.sh
-    args: {{ cf_user }} {{ default_domain }}
-
   - name: Register Caller
     type: uac-sipp
     username: {{ caller }}
@@ -22,9 +17,6 @@ tasks:
     config_file: scripts/sipp-register.xml
     ip: {{ cf_ip }}
     port: {{ cf_port }}
-    require:
-      after:
-        task: Enable call forward user
   
   - name: Register Callee
     type: uac-sipp
@@ -81,31 +73,24 @@ tasks:
     args: {{ callee }} {{ default_domain }}
     require:
       after: Caller UAC
-
-  - name: Disable call forward user
-    type: mysql-client
-    script: scripts/disable_user.sh
-    args: {{ cf_user }} {{ default_domain }}
-    require:
-      after: Remove CF No Answer URI for callee
   
   - name: Delete caller AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
     require:
       after:
-        task: Disable call forward user
+        task: Remove CF No Answer URI for callee
 
   - name: Delete callee AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
     require:
       after:
-        task: Disable call forward user
+        task: Remove CF No Answer URI for callee
   
   - name: Delete call forward user AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ cf_user }}@{{ default_domain }}
     require:
       after:
-        task: Disable call forward user
+        task: Remove CF No Answer URI for callee

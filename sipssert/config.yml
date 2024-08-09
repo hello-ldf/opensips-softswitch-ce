@@ -51,6 +51,15 @@ init_tasks:
         task: Create callee
         wait: 1
 
+  - name: Enable call forward user
+    type: mysql-client
+    script: init_tasks/enable_user.sh
+    args: {{ cf_user }} {{ default_domain }}
+    require:
+      after:
+        task: Create call forward user
+        wait: 1
+
 
 cleanup_tasks:
   - name: Delete caller
@@ -64,6 +73,18 @@ cleanup_tasks:
   - name: Delete call forward user
     type: opensips-cli
     args: -d -x user delete {{ cf_user }}@{{ default_domain }}
+
+  - name: Delete caller AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
+
+  - name: Delete callee AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
+  
+  - name: Delete call forward user AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ cf_user }}@{{ default_domain }}
 
   - name: Delete test domain
     type: mysql-client
