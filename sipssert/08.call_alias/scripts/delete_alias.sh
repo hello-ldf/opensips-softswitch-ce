@@ -1,0 +1,1 @@
+mysql opensips -e "DELETE FROM dids WHERE alias_username='$1';"
