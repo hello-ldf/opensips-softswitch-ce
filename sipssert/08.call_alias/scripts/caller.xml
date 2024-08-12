@@ -7,11 +7,11 @@
   <send retrans="500">
     <![CDATA[
 
-      INVITE sip:[callee_alias]@[domain];transport=[transport] SIP/2.0
+      INVITE sip:+[callee_alias]@[domain];transport=[transport] SIP/2.0
       Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch];rport
       Max-Forwards: 70
       Contact: <sip:[caller]@[local_ip]:[local_port]>
-      To: <sip:[callee_alias]@[domain]>
+      To: <sip:+[callee_alias]@[domain]>
       From: <sip:[caller]@[domain];transport=[transport]>;tag=[call_number]
       Call-ID: [scenario]:///[call_id]
       CSeq: 1 INVITE
@@ -45,11 +45,11 @@
   <send>
     <![CDATA[
 
-      ACK sip:[callee_alias]@[domain];transport=[transport] SIP/2.0
+      ACK sip:+[callee_alias]@[domain];transport=[transport] SIP/2.0
       [last_Via:]
       Max-Forwards: 70
       Contact: <sip:[caller]@[local_ip]:[local_port]>
-      To: <sip:[callee_alias]@[domain]>
+      To: <sip:+[callee_alias]@[domain]>
       From: <sip:[caller]@[domain];transport=[transport]>;tag=[call_number]
       Call-ID: [scenario]:///[call_id]
       CSeq: 1 ACK
@@ -60,11 +60,11 @@
   <send retrans="500">
     <![CDATA[
 
-      INVITE sip:[callee_alias]@[domain];transport=[transport] SIP/2.0
+      INVITE sip:+[callee_alias]@[domain];transport=[transport] SIP/2.0
       Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch];rport
       Max-Forwards: 70
       Contact: <sip:[caller]@[local_ip]:[local_port]>
-      To: <sip:[callee_alias]@[domain]>
+      To: <sip:+[callee_alias]@[domain]>
       From: <sip:[caller]@[domain];transport=[transport]>;tag=[call_number]
       Call-ID: [scenario]:///[call_id]
       CSeq: 2 INVITE
@@ -113,7 +113,7 @@
 
       ACK [next_url] SIP/2.0
       Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch];rport
-      To: <sip:[callee_alias]@[domain]>[peer_tag_param]
+      To: <sip:+[callee_alias]@[domain]>[peer_tag_param]
       From: <sip:[caller]@[domain];transport=[transport]>;tag=[call_number]
       [routes]
       CSeq: 1 ACK
@@ -135,7 +135,7 @@
 
       BYE [next_url] SIP/2.0
       Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch];rport
-      To: <sip:[callee_alias]@[domain]>[peer_tag_param]
+      To: <sip:+[callee_alias]@[domain]>[peer_tag_param]
       From: <sip:[caller]@[domain];transport=[transport]>;tag=[call_number]
       [routes]
       CSeq: 2 BYE
