@@ -18,10 +18,10 @@ tasks:
     ip: {{ callee_ip }}
     port: {{ callee_port }}
 
-  - name: Add alias for callee
+  - name: Add did for callee
     type: mysql-client
-    script: scripts/add_alias.sh
-    args: {{ callee }} {{ default_domain }} {{ callee_alias }}
+    script: scripts/add_did.sh
+    args: {{ callee }} {{ default_domain }} {{ callee_did }}
     require:
       - after:
           task: Register callee
@@ -34,12 +34,12 @@ tasks:
     ip: {{ caller_ip }}
     port: {{ caller_port }}
     keys:
-      callee_alias: {{ callee_alias }}
+      callee_did: {{ callee_did }}
     require:
       - after:
           task: Register caller
       - after:
-          task: Add alias for callee
+          task: Add did for callee
   
   - name: Callee UAC
     type: uas-sipp
@@ -52,10 +52,10 @@ tasks:
       - started:
           task: Caller UAC
   
-  - name: Delete callee alias
+  - name: Delete callee did
     type: mysql-client
-    script: scripts/delete_alias.sh
-    args: {{ callee_alias }}
+    script: scripts/delete_did.sh
+    args: {{ callee_did }}
     require:
       after:
         task: Callee UAC
