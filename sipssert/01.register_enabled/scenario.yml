@@ -36,18 +36,11 @@ tasks:
         task: Register callee
         wait: 1
   
+cleanup_tasks:
   - name: Delete caller AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
-    require:
-      after:
-        task: MI check Register caller
-        wait: 1
 
   - name: Delete callee AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
-    require:
-      after:
-        task: MI check Register callee
-        wait: 1

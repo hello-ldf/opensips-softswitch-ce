@@ -63,18 +63,11 @@ tasks:
         task: Caller UAC
         wait: 1
 
+cleanup_tasks:
   - name: Delete caller AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
-    require:
-      after:
-        task: Caller UAC
-        wait: 1
   
   - name: Delete callee AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
-    require:
-      after:
-        task: Disable VM NO ANSWER for callee
-        wait: 1

@@ -89,16 +89,11 @@ tasks:
       after:
         task: Check DND OFF ACL
 
+cleanup_tasks:
   - name: Delete caller AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
-    require:
-      after:
-        task: Caller UAC
 
   - name: Delete callee AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
-    require:
-      after:
-        task: Callee UAS

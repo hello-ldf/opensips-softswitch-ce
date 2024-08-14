@@ -26,10 +26,7 @@ tasks:
       - after:
           task: Check callee not registered
 
+cleanup_tasks:
   - name: Delete caller AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
-    require:
-      after:
-        task: Caller UAC
-        wait: 1

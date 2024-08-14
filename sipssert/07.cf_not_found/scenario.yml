@@ -89,24 +89,16 @@ tasks:
     require:
       after: Caller UAC 2
       after: CF User UAC 2
-  
+
+cleanup_tasks:
   - name: Delete caller AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
-    require:
-      after:
-        task: Remove CF Not Found URI for callee
 
   - name: Delete callee AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
-    require:
-      after:
-        task: Remove CF Not Found URI for callee
   
   - name: Delete call forward user AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ cf_user }}@{{ default_domain }}
-    require:
-      after:
-        task: Remove CF Not Found URI for callee

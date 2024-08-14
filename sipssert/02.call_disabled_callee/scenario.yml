@@ -1,5 +1,5 @@
 ---
-timeout: 60
+timeout: 120
 
 tasks:
   - name: Register caller
@@ -61,7 +61,7 @@ tasks:
     require:
       - after:
           task: Register callee
-          wait: 11
+          wait: 70
   
   - name: Enable ACL callee
     type: mysql-client
@@ -72,18 +72,11 @@ tasks:
         task: Fail caller UAC
         wait: 1
 
+cleanup_tasks:
   - name: Delete caller AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
-    require:
-      after:
-        task: Caller UAC
-        wait: 1
 
   - name: Delete callee AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
-    require:
-      after:
-        task: Callee UAC
-        wait: 1
