@@ -1,0 +1,115 @@
+---
+timeout: 40
+
+tasks:
+  - name: Register callee
+    type: uac-sipp
+    username: {{ callee }}
+    password: "{{ callee_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ callee_ip }}
+    port: {{ callee_port }}
+
+  - name: Add did for callee
+    type: mysql-client
+    script: scripts/add_did.sh
+    args: {{ callee }} {{ default_domain }} {{ callee_did }}
+    require:
+      - after:
+          task: Register callee
+
+  - name: Add gateway
+    type: mysql-client
+    script: scripts/add_gateway.sh
+    args: 'sip:{{ opensips_ip }}:{{ gateway_port }}'
+  
+  - name: MI reload gateway
+    type: opensips-cli
+    args: -d -x mi dr_reload
+    require:
+      - after:
+          task: Add gateway
+
+  - name: Add rule
+    type: mysql-client
+    script: scripts/add_rule.sh
+    args: {{ callee_did }}
+    require:
+      - after:
+          task: MI reload gateway
+  
+  - name: MI reload rules
+    type: opensips-cli
+    args: -d -x mi dr_reload
+    require:
+      - after:
+          task: Add rule
+      - after:
+          task: Add did for callee
+
+  - name: Caller UAC
+    type: uac-sipp
+    config_file: scripts/caller.xml
+    ip: {{ opensips_ip }}
+    port: {{ gateway_port }}
+    keys:
+      gateway: {{ opensips_ip }}
+      gw_port: {{ gateway_port }}
+      callee_did: {{ callee_did }}
+    require:
+      - after:
+          task: MI reload rules
+  
+  - name: Callee UAC
+    type: uas-sipp
+    username: {{ callee }}
+    password: "{{ callee_password }}"
+    config_file: scripts/callee.xml
+    ip: {{ callee_ip }}
+    port: {{ callee_port }}
+    require:
+      - started:
+          task: Caller UAC
+
+  - name: Delete rule
+    type: mysql-client
+    script: scripts/delete_rule.sh
+    args: {{ callee_did }}
+    require:
+      - after:
+          task: Callee UAC
+
+  - name: MI reload rules after delete
+    type: opensips-cli
+    args: -d -x mi dr_reload
+    require:
+      - after:
+          task: Delete rule
+
+  - name: Delete gateway
+    type: mysql-client
+    script: scripts/delete_gateway.sh
+    args: 'sip:{{ opensips_ip }}:{{ gateway_port }}'
+    require:
+      - after:
+          task: MI reload rules after delete
+
+  - name: MI reload gateway after delete
+    type: opensips-cli
+    args: -d -x mi dr_reload
+    require:
+      - after:
+          task: Delete gateway
+  
+  - name: Delete callee did
+    type: mysql-client
+    script: scripts/delete_did.sh
+    args: {{ callee_did }}
+    require:
+      after:
+        task: MI reload gateway after delete
+
+cleanup_tasks:
+  - name: Delete callee AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
