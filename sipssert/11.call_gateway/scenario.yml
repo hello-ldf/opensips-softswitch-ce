@@ -1,0 +1,49 @@
+---
+timeout: 60
+
+init_tasks:
+  - name: Allow PSTN for Caller
+    type: mysql-client
+    script: scripts/allow_pstn.sh
+    args: {{ caller }} {{ default_domain }}
+
+tasks:
+  - name: Register caller
+    type: uac-sipp
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    config_file: scripts/sipp-register.xml
+    ip: {{ caller_ip }}
+    port: {{ caller_port }}
+
+  - name: Caller UAC
+    type: uac-sipp
+    config_file: scripts/caller.xml
+    username: {{ caller }}
+    password: "{{ caller_password }}"
+    ip: {{ caller_ip }}
+    port: {{ caller_port }}
+    keys:
+      did: {{ outgoing_did }}
+    require:
+      - after:
+          task: Register caller
+
+  - name: Gateway UAS
+    type: uas-sipp
+    config_file: scripts/gateway.xml
+    ip: {{ callee_ip }}
+    port: {{ gateway_port }}
+    require:
+      - started:
+          task: Caller UAC
+
+cleanup_tasks:
+  - name: Deny PSTN for Caller
+    type: mysql-client
+    script: scripts/deny_pstn.sh
+    args: {{ caller }} {{ default_domain }}
+
+  - name: Delete caller AOR
+    type: opensips-cli
+    args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
