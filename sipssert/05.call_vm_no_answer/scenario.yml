@@ -1,6 +1,12 @@
 ---
 timeout: 40
 
+init_tasks:
+  - name: Enable VM NO ANSWER for callee
+    type: mysql-client
+    script: scripts/enable_vm.sh
+    args: {{ callee }} {{ default_domain }}
+
 tasks:
   - name: Register caller
     type: uac-sipp
@@ -18,15 +24,6 @@ tasks:
     ip: {{ callee_ip }}
     port: {{ callee_port }}
 
-  - name: Enable VM NO ANSWER for callee
-    type: mysql-client
-    script: scripts/enable_vm.sh
-    args: {{ callee }} {{ default_domain }}
-    require:
-      after:
-        task: Register callee
-        wait: 1
-
   - name: Caller UAC
     type: uac-sipp
     username: {{ caller }}
@@ -35,9 +32,6 @@ tasks:
     ip: {{ caller_ip }}
     port: {{ caller_port }}
     require:
-      - after:
-          task: Enable VM NO ANSWER for callee
-          wait: 1
       - after:
           task: Register caller
           wait: 1
@@ -51,17 +45,8 @@ tasks:
     port: {{ callee_port }}
     require:
       - after:
-          task: Enable VM NO ANSWER for callee
+          task: Register callee
           wait: 1
-  
-  - name: Disable VM NO ANSWER for callee
-    type: mysql-client
-    script: scripts/disable_vm.sh
-    args: {{ callee }} {{ default_domain }}
-    require:
-      after:
-        task: Caller UAC
-        wait: 1
 
 cleanup_tasks:
   - name: Delete caller AOR
@@ -71,3 +56,8 @@ cleanup_tasks:
   - name: Delete callee AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
+
+  - name: Disable VM NO ANSWER for callee
+    type: mysql-client
+    script: scripts/disable_vm.sh
+    args: {{ callee }} {{ default_domain }}

@@ -1,6 +1,12 @@
 ---
 timeout: 40
 
+init_tasks:
+  - name: Enable VM NOT FOUND for callee
+    type: mysql-client
+    script: scripts/enable_vm.sh
+    args: {{ callee }} {{ default_domain }}
+
 tasks:
   - name: Register caller
     type: uac-sipp
@@ -15,15 +21,6 @@ tasks:
     script: scripts/check-register.py
     args: {{ callee }}
 
-  - name: Enable VM NOT FOUND for callee
-    type: mysql-client
-    script: scripts/enable_vm.sh
-    args: {{ callee }} {{ default_domain }}
-    require:
-      after:
-        task: Check callee not registered
-        wait: 1
-
   - name: Caller UAC
     type: uac-sipp
     username: {{ caller }}
@@ -33,22 +30,15 @@ tasks:
     port: {{ caller_port }}
     require:
       - after:
-          task: Enable VM NOT FOUND for callee
-          wait: 1
-      - after:
           task: Register caller
           wait: 1
-  
-  - name: Disable VM NOT FOUND for callee
-    type: mysql-client
-    script: scripts/disable_vm.sh
-    args: {{ callee }} {{ default_domain }}
-    require:
-      after:
-        task: Caller UAC
-        wait: 1
 
 cleanup_tasks:
   - name: Delete caller AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
+  
+  - name: Disable VM NOT FOUND for callee
+    type: mysql-client
+    script: scripts/disable_vm.sh
+    args: {{ callee }} {{ default_domain }}

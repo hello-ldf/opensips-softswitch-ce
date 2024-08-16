@@ -1,6 +1,12 @@
 ---
 timeout: 60
 
+init_tasks:
+  - name: Add CF Not Found URI for callee
+    type: mysql-client
+    script: scripts/add_cf_uri.sh
+    args: {{ callee }} {{ default_domain }} sip:{{ cf_user }}@{{ default_domain }}
+
 tasks:
   - name: Register caller
     type: uac-sipp
@@ -17,11 +23,6 @@ tasks:
     config_file: scripts/sipp-register.xml
     ip: {{ cf_ip }}
     port: {{ cf_port }}
-  
-  - name: Add CF Not Found URI for callee
-    type: mysql-client
-    script: scripts/add_cf_uri.sh
-    args: {{ callee }} {{ default_domain }} sip:{{ cf_user }}@{{ default_domain }}
 
   - name: Caller UAC
     type: uac-sipp
@@ -35,7 +36,6 @@ tasks:
     require:
       after: Register caller
       after: Register call forward user
-      after: Add CF Not Found URI for callee
   
   - name: CF User UAC
     type: uas-sipp
@@ -47,7 +47,6 @@ tasks:
     require:
       after: Register caller
       after: Register call forward user
-      after: Add CF Not Found URI for callee
   
   - name: Register Callee
     type: uac-sipp
@@ -81,14 +80,6 @@ tasks:
     port: {{ callee_port }}
     require:
       after: Register Callee
-  
-  - name: Remove CF Not Found URI for callee
-    type: mysql-client
-    script: scripts/remove_cf_uri.sh
-    args: {{ callee }} {{ default_domain }}
-    require:
-      after: Caller UAC 2
-      after: CF User UAC 2
 
 cleanup_tasks:
   - name: Delete caller AOR
@@ -102,3 +93,8 @@ cleanup_tasks:
   - name: Delete call forward user AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ cf_user }}@{{ default_domain }}
+
+  - name: Remove CF Not Found URI for callee
+    type: mysql-client
+    script: scripts/remove_cf_uri.sh
+    args: {{ callee }} {{ default_domain }}

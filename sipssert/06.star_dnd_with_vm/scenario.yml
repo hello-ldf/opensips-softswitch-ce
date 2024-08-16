@@ -1,6 +1,12 @@
 ---
 timeout: 60
 
+init_tasks:
+  - name: Enable VM BUSY for callee
+    type: mysql-client
+    script: scripts/enable_vm.sh
+    args: {{ callee }} {{ default_domain }}
+
 tasks:
   - name: Register caller
     type: uac-sipp
@@ -18,14 +24,6 @@ tasks:
     ip: {{ callee_ip }}
     port: {{ callee_port }}
 
-  - name: Enable VM BUSY for callee
-    type: mysql-client
-    script: scripts/enable_vm.sh
-    args: {{ callee }} {{ default_domain }}
-    require:
-      after:
-        task: Register callee
-
   - name: Set Callee DND
     type: uac-sipp
     username: {{ callee }}
@@ -35,7 +33,7 @@ tasks:
     port: {{ callee_port }}
     require:
       after:
-        task: Enable VM BUSY for callee
+        task: Register callee
 
   - name: Check DND ACL
     type: mysql-client
@@ -97,14 +95,6 @@ tasks:
       after:
         task: Check DND OFF ACL
 
-  - name: Disable VM BUSY for callee
-    type: mysql-client
-    script: scripts/disable_vm.sh
-    args: {{ callee }} {{ default_domain }}
-    require:
-      after:
-        task: Callee UAS
-
 cleanup_tasks:
   - name: Delete caller AOR
     type: opensips-cli
@@ -113,3 +103,8 @@ cleanup_tasks:
   - name: Delete callee AOR
     type: opensips-cli
     args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
+
+  - name: Disable VM BUSY for callee
+    type: mysql-client
+    script: scripts/disable_vm.sh
+    args: {{ callee }} {{ default_domain }}
