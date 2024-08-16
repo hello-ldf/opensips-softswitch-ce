@@ -60,8 +60,75 @@ init_tasks:
         task: Create call forward user
         wait: 1
 
+  - name: Add did for callee
+    type: mysql-client
+    script: init_tasks/add_did.sh
+    args: {{ callee }} {{ default_domain }} {{ callee_did }}
+
+  - name: Add gateway
+    type: mysql-client
+    script: init_tasks/add_gateway.sh
+    args: 'sip:{{ opensips_ip }}:{{ gateway_port }}'
+  
+  - name: MI reload gateway
+    type: opensips-cli
+    args: -d -x mi dr_reload
+    require:
+      - after:
+          task: Add gateway
+
+  - name: Add rule
+    type: mysql-client
+    script: init_tasks/add_rule.sh
+    args: {{ outgoing_did }}
+    require:
+      - after:
+          task: MI reload gateway
+  
+  - name: MI reload rules
+    type: opensips-cli
+    args: -d -x mi dr_reload
+    require:
+      - after:
+          task: Add rule
+
 
 cleanup_tasks:
+  - name: Delete rule
+    type: mysql-client
+    script: cleanup_tasks/delete_rule.sh
+    args: {{ outgoing_did }}
+
+  - name: MI reload rules after delete
+    type: opensips-cli
+    args: -d -x mi dr_reload
+    require:
+      - after:
+          task: Delete rule
+
+  - name: Delete gateway
+    type: mysql-client
+    script: cleanup_tasks/delete_gateway.sh
+    args: 'sip:{{ opensips_ip }}:{{ gateway_port }}'
+    require:
+      - after:
+          task: MI reload rules after delete
+
+  - name: MI reload gateway after delete
+    type: opensips-cli
+    args: -d -x mi dr_reload
+    require:
+      - after:
+          task: Delete gateway
+  
+  - name: Delete callee did
+    type: mysql-client
+    script: cleanup_tasks/delete_did.sh
+    args: {{ callee_did }}
+    require:
+      after:
+        task: MI reload gateway after delete
+
   - name: Delete caller
     type: opensips-cli
     args: -d -x user delete {{ caller }}@{{ default_domain }}

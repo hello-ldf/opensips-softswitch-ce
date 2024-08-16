@@ -1,0 +1,1 @@
+mysql opensips -e "INSERT INTO dr_rules VALUES (1, '1', $1, '', 0, '', 'gw-test', 'N', NULL, NULL, '');"

@@ -10,9 +10,9 @@
       INVITE sip:+[callee_did]@[domain];transport=[transport] SIP/2.0
       Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch];rport
       Max-Forwards: 70
-      Contact: <sip:[gateway]:[gw_port]>
+      Contact: <sip:[local_ip]:[local_port]>
       To: <sip:+[callee_did]@[domain]>
-      From: <sip:[gateway]:[gw_port];transport=[transport]>;tag=[call_number]
+      From: <sip:[local_ip]:[local_port];transport=[transport]>;tag=[call_number]
       Call-ID: [scenario]:///[call_id]
       CSeq: 1 INVITE
       Allow: INVITE, ACK, CANCEL, BYE, NOTIFY, REFER, MESSAGE, OPTIONS, INFO, SUBSCRIBE
@@ -60,10 +60,10 @@
       ACK [next_url] SIP/2.0
       Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch];rport
       To: <sip:+[callee_did]@[domain]>[peer_tag_param]
-      From: <sip:[gateway]:[gw_port];transport=[transport]>;tag=[call_number]
+      From: <sip:[local_ip]:[local_port];transport=[transport]>;tag=[call_number]
       [routes]
       CSeq: 1 ACK
-      Contact: <sip:[gateway]:[gw_port]>
+      Contact: <sip:[local_ip]:[local_port]>
       Call-ID: [scenario]:///[call_id]
       Max-Forwards: 70
       Content-Length: 0
@@ -82,10 +82,10 @@
       BYE [next_url] SIP/2.0
       Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch];rport
       To: <sip:+[callee_did]@[domain]>[peer_tag_param]
-      From: <sip:[gateway]:[gw_port];transport=[transport]>;tag=[call_number]
+      From: <sip:[local_ip]:[local_port];transport=[transport]>;tag=[call_number]
       [routes]
       CSeq: 2 BYE
-      Contact: <sip:[gateway]:[gw_port]>
+      Contact: <sip:[local_ip]:[local_port]>
       Call-ID: [scenario]:///[call_id]
       Max-Forwards: 70
       Content-Length: 0
