@@ -69,13 +69,6 @@ init_tasks:
     type: mysql-client
     script: init_tasks/add_gateway.sh
     args: 'sip:{{ opensips_ip }}:{{ gateway_port }}'
-  
-  - name: MI reload gateway
-    type: opensips-cli
-    args: -d -x mi dr_reload
-    require:
-      - after:
-          task: Add gateway
 
   - name: Add rule
     type: mysql-client
@@ -83,14 +76,14 @@ init_tasks:
     args: {{ outgoing_did }}
     require:
       - after:
-          task: MI reload gateway
+          task: Add gateway
   
-  - name: MI reload rules
+  - name: MI reload dr
     type: opensips-cli
     args: -d -x mi dr_reload
     require:
-      - after:
-          task: Add rule
+      - after: Add rule
+      - after: Add gateway
 
 
 cleanup_tasks:
@@ -99,35 +92,22 @@ cleanup_tasks:
     script: cleanup_tasks/delete_rule.sh
     args: {{ outgoing_did }}
 
-  - name: MI reload rules after delete
-    type: opensips-cli
-    args: -d -x mi dr_reload
-    require:
-      - after:
-          task: Delete rule
-
   - name: Delete gateway
     type: mysql-client
     script: cleanup_tasks/delete_gateway.sh
     args: 'sip:{{ opensips_ip }}:{{ gateway_port }}'
-    require:
-      - after:
-          task: MI reload rules after delete
 
   - name: MI reload gateway after delete
     type: opensips-cli
     args: -d -x mi dr_reload
     require:
-      - after:
-          task: Delete gateway
-  
+      - after: Delete rule
+      - after: Delete gateway
+
   - name: Delete callee did
     type: mysql-client
     script: cleanup_tasks/delete_did.sh
     args: {{ callee_did }}
-    require:
-      after:
-        task: MI reload gateway after delete
 
   - name: Delete caller
     type: opensips-cli
@@ -158,17 +138,14 @@ cleanup_tasks:
     script: cleanup_tasks/remove_domain.sh
     args: {{ default_domain }}
     require:
-      after:
-        task: Delete caller
-      after:
-        task: Delete callee
+      - after: Delete caller
+      - after: Delete callee
   
   - name: Reload domains
     type: opensips-cli
     args: -d -x mi domain_reload
     require:
-      after:
-        task: Delete test domain
+      after: Delete test domain
 
 
 defaults:
