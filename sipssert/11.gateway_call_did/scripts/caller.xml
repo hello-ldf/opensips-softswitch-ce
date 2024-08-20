@@ -62,7 +62,7 @@
       To: <sip:+[callee_did]@[domain]>[peer_tag_param]
       From: <sip:[local_ip]:[local_port];transport=[transport]>;tag=[call_number]
       [routes]
-      CSeq: 2 ACK
+      CSeq: 1 ACK
       Contact: <sip:[local_ip]:[local_port]>
       Call-ID: [scenario]:///[call_id]
       Max-Forwards: 70
@@ -84,7 +84,7 @@
       To: <sip:+[callee_did]@[domain]>[peer_tag_param]
       From: <sip:[local_ip]:[local_port];transport=[transport]>;tag=[call_number]
       [routes]
-      CSeq: 3 BYE
+      CSeq: 2 BYE
       Contact: <sip:[local_ip]:[local_port]>
       Call-ID: [scenario]:///[call_id]
       Max-Forwards: 70
