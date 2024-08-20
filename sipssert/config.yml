@@ -184,6 +184,7 @@ defaults:
       callee: {{ callee }}
   mysql-client:
     host: {{ opensips_ip }}
+    port: {{ mysql_port }}
     user: {{ mysql_user }}
     password: {{ mysql_password }}
     database: {{ database }}
