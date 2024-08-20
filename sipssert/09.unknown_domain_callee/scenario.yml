@@ -31,8 +31,8 @@ tasks:
     ip: {{ callee_ip }}
     port: {{ callee_port }}
     require:
-      - started:
-          task: Caller UAC
+      - after:
+          task: Register caller
 
 cleanup_tasks:
   - name: Delete caller AOR
