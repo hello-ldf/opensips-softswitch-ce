@@ -5,16 +5,17 @@ callee: callee
 callee_password: 123456
 callee_port: 5066
 default_domain: domain.test
-opensips_ip: 192.168.1.129
+opensips_ip: {{ 'HOST_IP' | getenv }}
 opensips_port: 5060
-caller_ip: 192.168.1.129
-callee_ip: 192.168.1.129
-mysql_user: opensips
-mysql_password: opensipsrw
+caller_ip: {{ 'HOST_IP' | getenv }}
+callee_ip: {{ 'HOST_IP' | getenv }}
+mysql_user: {{ 'MYSQL_USER' | getenv }}
+mysql_password: {{ 'MYSQL_PASSWORD' | getenv }}
+mysql_port: {{ 'MYSQL_PORT' | getenv }}
 database: opensips
 cf_user: callforward
 cf_pass: 123456
-cf_ip: 192.168.1.129
+cf_ip: {{ 'HOST_IP' | getenv }}
 cf_port: 5067
 callee_did: 1715201
 gateway_port: 5100
