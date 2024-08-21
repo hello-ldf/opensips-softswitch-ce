@@ -1,42 +1,89 @@
 # OpenSIPS SoftSwitch - Community Edition
 
-This project contains a fully functional OpenSIPS setup used as a SoftSwitch.
+This project contains a fully functional OpenSIPS setup used as a SoftSwitch
+that provides the following features:
 
-## Getting started
+* **TODO**: complete with the list of features
 
-### Installation
+## Getting Started
 
-Clone the repository:
+The simplest way to get the project running is to setup [Docker](https://www.docker.com/) on your host and then run:
 
 ``` shell
 git clone --recursive https://gitlab.opensips-solutions.com:44344/ce/softswitch.git
+cd softswitch
+docker-compose up
 ```
 
-### Configuration
+For more information about setup, please check the [Setup
+page](docs/setup.md).
 
-There is the `.env` file where you can set up the following variables:
-- `HOST_IP`: IP address of a interface from the host machine
-- `NETWORK`: IP addresses class for Docker containers in CIDR notation (IP/mask)
-- `OPENSIPS_IP`: IP address of the OpenSIPS container
-- `MYSQL_IP`: IP address of the MySQL container
-- `MYSQL_ROOT_PASSWORD`: root password for MySQL container
-- `MYSQL_DATABASE`: database name for OpenSIPS
-- `MYSQL_USER`: database user for OpenSIPS
-- `MYSQL_PASSWORD`: password for OpenSIPS database user
-- `CP_IP`: IP address of the OpenSIPS-CP container
-- `RTPPROXY_IP`: IP address of the RTPProxy container
-- `RTPPROXY_PORT`: listening port for RTPProxy
-- `MINPORT`: minimum of the port range for RTPProxy
-- `MAXPORT`: maximum of the port range for RTPProxy
-- `FREESWITCH_IP`: IP address of the FreeSWITCH container
-- `ENABLE_HOMER`: enable or disable Homer SIP capture (`yes`/`no`)
-- `DEFAULT_DOMAIN`: a default domain provided for OpenSIPS
+Once everything is initialized, you should be able to access the OpenSIPS
+Control Panel using the following credentials:
 
-### Get up and running
+* URL: [http://localhost/cp](http://localhost/cp)
+* User: `admin`
+* Password: `opensips`
 
-First, you need to put your IP address in the `HOST_IP` variable in `.env` file (**very important**).
-Then, you can start the SoftSwitch with the following command:
+For more information about provisioning, please check the [Provisioning
+page](docs/provisioning.md).
 
+
+At this point you can follow the [Getting Started](docs/getting-started.md)
+tutorial to test the OpenSIPS SoftSwitch Community Edition.
+
+## Testing
+
+OpenSIPS SoftwSwitch comes with a set of tests that you can run once the setup
+is complete:
 ``` shell
-docker-composer up --build
+./run-sipssert.sh
 ```
+
+For more information, please check the [Testing page](docs/testing.md).
+
+## OpenSIPS
+
+OpenSIPS configuration is developed in a separate git repository that can be
+found [here](https://gitlab.opensips-solutions.com:44344/ce/softswitch-config.git).
+
+## Homer
+
+In order to be able to visualize SoftSwitch call flows, it is recommended to
+setup the [Homer](https://github.com/sipcapture/homer) tool by following [these](docs/homer.md)
+steps.
+
+## Documentation
+
+Documentation pages contain the following topics:
+
+* [Setup](docs/setup.md) - contains information about how to install and setup
+* [Getting Started](docs/getting-started.md) - show how you can use the
+SoftSwitch to test certain scenarios
+* [Components](docs/components.md) - list of components used in the project
+* [Provisioning](docs/provisioning.md) - useful information about provisioning
+the platform
+* [Testing](docs/testing.md) - information about testing the platform
+* [Homer](docs/homer.md) - information about setting up Homer server
+* [Devel](docs/devel.md) - information about development
+
+
+## Contribute
+
+This project is Community driven, therefore any contribution is welcome. Feel
+free to open a pull request for any fix/feature you find useful.
+
+## License
+
+<!-- License source -->
+[License-GPLv3]: https://www.gnu.org/licenses/gpl-3.0.en.html "GNU GPLv3"
+[Logo-CC_BY]: https://i.creativecommons.org/l/by/4.0/88x31.png "Creative Common Logo"
+[License-CC_BY]: https://creativecommons.org/licenses/by/4.0/legalcode "Creative Common License"
+
+The `OpenSIPS SoftSwitch Community Edition` source code is licensed under the [GNU General Public License v3.0][License-GPLv3]
+
+All documentation files (i.e. `.md` extension) are licensed under the [Creative Common License 4.0][License-CC_BY]
+
+![Creative Common Logo][Logo-CC_BY]
+
+© 2024 - OpenSIPS Solutions
