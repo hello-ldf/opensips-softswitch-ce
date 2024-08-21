@@ -35,6 +35,8 @@ default is `172.72.0.0/24`
 - `FREESWITCH_IP`: IP address of the FreeSWITCH container; default is
 `172.72.0.6`
 - `ENABLE_HOMER`: enable or disable Homer SIP capture (`yes`/`no`); check the [Homer](homer.md) section to enable it; default is `no`/disabled
+- `HOMER_IP`: Homer IP used to trace the traffic; check the [Homer](homer.md); default is `HOST_IP`
+- `HOMER_Port`: Homer port used to trace the traffic; check the [Homer](homer.md); default is `9060`
 - `DEFAULT_DOMAIN`: a default domain provided for OpenSIPS; default is
 `domain.sip`
 
