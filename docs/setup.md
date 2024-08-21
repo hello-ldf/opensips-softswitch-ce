@@ -2,14 +2,16 @@
 
 ## Prerequisites
 
-**TODO**: document [Docker](https://www.docker.com/) and [Docker
-Compose](https://docs.docker.com/compose/) requirements.
-**TODO**: specify that git is a must
+To run this platform, you need to have [Docker](https://www.docker.com/) and [Docker
+Compose](https://docs.docker.com/compose/) installed on your machine. Also, `git` is another requirement to clone the repository.
 
 ## Network
 
-**TODO**: describe the network we are using
-**TODO**: details about `HOST_IP` and its importance
+The platform uses a bridge network to connect the containers. This means that the containers can communicate with each other using their IP addresses. The IP addresses are set in the [.env](/.env) file. 
+
+To access the containers from outside this network, port forwarding is used to map the ports from the host machine to the containers. (e.g. OpenSIPS-CP container will be accessible at `localhost:80`).
+
+Containers may also have access to every service on the host machine that is listening on some port. This is why the **HOST_IP** address is set in the [.env](/.env) file and you **MUST** set it to the IP address of an interface from the host machine.
 
 ## Configuration
 
@@ -40,6 +42,15 @@ default is `172.72.0.0/24`
 
 Once the configuration is finalized (i.e. editting the `.env` file), you can
 start the service using:
-```
-docker-compose up
+``` shell
+docker-compose up  # if you use the standalone Docker Compose
+
+# use --build when you need to rebuild the images (e.g. after editing the modules.inc.php)
+docker-compose up --build
+
+# or
+docker compose up --build  # if you use the Docker Compose plugin
+
+# add -d to run in detached mode
+docker-compose up --build -d
 ```
