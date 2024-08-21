@@ -3,7 +3,29 @@
 This project contains a fully functional OpenSIPS setup used as a SoftSwitch
 that provides the following features:
 
-* **TODO**: complete with the list of features
+* SIP Proxy with **support for TCP and UDP**
+* **topology hiding** for all calls
+* **dialplans** for user and did formats
+* star codes to **enable/disable DND**
+* **call forward** URIs for each user:
+    * **always forward**
+    * **busy forward**
+    * **no answer forward**
+    * **not found forward**
+* **ACLs** for each user:
+	* **User Enabled**
+	* **Force NAT**
+	* **Enable PSTN**
+	* **DND**
+	* **VM Enabled**
+	* **VM Permanent Redirect**
+	* **VM Redirect Not Found**
+	* **VM Redirect on Busy**
+	* **VM Redirect on No Answer**
+* **RTPProxy** for voice traffic
+* **FreeSWITCH** for media services:
+    * **voicemails**
+    * **announcements**
 
 ## Getting Started
 
