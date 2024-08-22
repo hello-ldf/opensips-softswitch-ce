@@ -1,5 +1,5 @@
 ---
-timeout: 40
+timeout: 30
 
 tasks:
   - name: Register callee
@@ -10,6 +10,13 @@ tasks:
     ip: {{ callee_ip }}
     port: {{ callee_port }}
 
+  - name: Callee UAC
+    type: uas-sipp
+    config_file: scripts/callee.xml
+    ip: {{ callee_ip }}
+    port: {{ callee_port }}
+    require: Register callee
+
   - name: Gateway UAC
     type: uac-sipp
     config_file: scripts/gateway.xml
@@ -18,19 +25,7 @@ tasks:
     keys:
       callee_did: {{ callee_did }}
     require:
-      - after:
-          task: Register callee
-  
-  - name: Callee UAC
-    type: uas-sipp
-    username: {{ callee }}
-    password: "{{ callee_password }}"
-    config_file: scripts/callee.xml
-    ip: {{ callee_ip }}
-    port: {{ callee_port }}
-    require:
-      - started:
-          task: Caller UAC
+      started: Callee UAC
 
 cleanup_tasks:
   - name: Delete callee AOR
