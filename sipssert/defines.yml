@@ -18,6 +18,8 @@ cf_pass: 123456
 cf_ip: {{ 'HOST_IP' | getenv }}
 cf_port: 5067
 callee_did: 1715201
-gateway_ip: {{ 'HOST_IP' | getenv }}
-gateway_port: 5100
+gateway1_ip: {{ 'HOST_IP' | getenv }}
+gateway1_port: 5100
+gateway2_ip: {{ 'HOST_IP' | getenv }}
+gateway2_port: 5200
 outgoing_did: 1225200

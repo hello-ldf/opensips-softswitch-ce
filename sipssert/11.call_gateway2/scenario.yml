@@ -32,8 +32,8 @@ tasks:
   - name: Gateway UAS
     type: uas-sipp
     config_file: scripts/gateway.xml
-    ip: {{ gateway1_ip }}
-    port: {{ gateway1_port }}
+    ip: {{ gateway2_ip }}
+    port: {{ gateway2_port }}
     require:
       - started:
           task: Caller UAC

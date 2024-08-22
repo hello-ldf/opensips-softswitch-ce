@@ -65,10 +65,15 @@ init_tasks:
     script: init_tasks/add_did.sh
     args: {{ callee }} {{ default_domain }} {{ callee_did }}
 
-  - name: Add gateway
+  - name: Add gateway 1
     type: mysql-client
     script: init_tasks/add_gateway.sh
-    args: 'sip:{{ opensips_ip }}:{{ gateway_port }}'
+    args: gw_test1 sip:{{ gateway1_ip }}:{{ gateway1_port }}
+
+  - name: Add gateway 2
+    type: mysql-client
+    script: init_tasks/add_gateway.sh
+    args: gw_test2 sip:{{ gateway2_ip }}:{{ gateway2_port }}
 
   - name: Add rule
     type: mysql-client
@@ -76,14 +81,15 @@ init_tasks:
     args: {{ outgoing_did }}
     require:
       - after:
-          task: Add gateway
+          task: Add gateway 1
+      - after:
+          task: Add gateway 2
   
   - name: MI reload dr
     type: opensips-cli
     args: -d -x mi dr_reload
     require:
       - after: Add rule
-      - after: Add gateway
 
 
 cleanup_tasks:
@@ -92,17 +98,23 @@ cleanup_tasks:
     script: cleanup_tasks/delete_rule.sh
     args: {{ outgoing_did }}
 
-  - name: Delete gateway
+  - name: Delete gateway 1
     type: mysql-client
     script: cleanup_tasks/delete_gateway.sh
-    args: 'sip:{{ opensips_ip }}:{{ gateway_port }}'
+    args: 'sip:{{ gateway1_ip }}:{{ gateway1_port }}'
+
+  - name: Delete gateway 2
+    type: mysql-client
+    script: cleanup_tasks/delete_gateway.sh
+    args: 'sip:{{ gateway2_ip }}:{{ gateway2_port }}'
 
   - name: MI reload gateway after delete
     type: opensips-cli
     args: -d -x mi dr_reload
     require:
       - after: Delete rule
-      - after: Delete gateway
+      - after: Delete gateway 1
+      - after: Delete gateway 2
 
   - name: Delete callee did
     type: mysql-client

@@ -20,8 +20,8 @@ tasks:
   - name: Gateway UAC
     type: uac-sipp
     config_file: scripts/gateway.xml
-    ip: {{ gateway_ip }}
-    port: {{ gateway_port }}
+    ip: {{ gateway1_ip }}
+    port: {{ gateway1_port }}
     keys:
       callee_did: {{ callee_did }}
     require:
