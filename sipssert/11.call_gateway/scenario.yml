@@ -32,7 +32,7 @@ tasks:
   - name: Gateway UAS
     type: uas-sipp
     config_file: scripts/gateway.xml
-    ip: {{ callee_ip }}
+    ip: {{ gateway_ip }}
     port: {{ gateway_port }}
     require:
       - started:

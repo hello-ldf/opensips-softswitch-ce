@@ -10,10 +10,10 @@ tasks:
     ip: {{ callee_ip }}
     port: {{ callee_port }}
 
-  - name: Caller UAC
+  - name: Gateway UAC
     type: uac-sipp
-    config_file: scripts/caller.xml
-    ip: {{ opensips_ip }}
+    config_file: scripts/gateway.xml
+    ip: {{ gateway_ip }}
     port: {{ gateway_port }}
     keys:
       callee_did: {{ callee_did }}
