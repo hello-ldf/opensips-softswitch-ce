@@ -68,17 +68,26 @@ init_tasks:
   - name: Add gateway 1
     type: mysql-client
     script: init_tasks/add_gateway.sh
-    args: gw_test1 sip:{{ gateway1_ip }}:{{ gateway1_port }}
+    args:
+      - gw-domain-test1
+      - sip:{{ gateway1_ip }}:{{ gateway1_port }}
+      - 'Gateway Test 1'
 
   - name: Add gateway 2
     type: mysql-client
     script: init_tasks/add_gateway.sh
-    args: gw_test2 sip:{{ gateway2_ip }}:{{ gateway2_port }}
+    args:
+      - gw-domain-test2
+      - sip:{{ gateway2_ip }}:{{ gateway2_port }}
+      - 'Gateway Test 2'
 
   - name: Add rule
     type: mysql-client
     script: init_tasks/add_rule.sh
-    args: {{ outgoing_did }}
+    args:
+      - {{ outgoing_did }}
+      - gw-domain-test1,gw-domain-test2
+      - 'Specific test DID routing'
     require:
       - after:
           task: Add gateway 1

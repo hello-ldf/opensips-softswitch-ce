@@ -1,1 +1,1 @@
-mysql opensips -e "INSERT INTO domain (domain) VALUES ('$1');"
+mysql opensips -e "REPLACE INTO domain (domain) VALUES ('$1');"
