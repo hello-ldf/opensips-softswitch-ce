@@ -100,6 +100,9 @@ volumes:
 
 networks:
   localnetwork:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.host_binding_ipv4: "${HOST_IP}"
     ipam:
       config:
         - subnet: ${NETWORK}
