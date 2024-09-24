@@ -34,7 +34,7 @@ The simplest way to get the project running is to setup [Docker](https://www.doc
 ``` shell
 git clone --recursive https://gitlab.opensips-solutions.com:44344/ce/softswitch.git
 cd softswitch
-docker-compose up
+docker compose up
 ```
 
 For more information about setup, please check the [Setup
