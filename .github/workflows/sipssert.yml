@@ -16,17 +16,30 @@ jobs:
 
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
-    - name: Fix HOST_IP env
+    - name: Setup Environment
       run: |
         HOST_IP=$(hostname -I | cut -d ' ' -f 1)
         sed "s/^HOST_IP=.*/HOST_IP=$HOST_IP/g" -i .env
+        ls -l etc/
+        while read line; do
+          [ "$line" = "" ] && continue;
+          echo "$line" >> $GITHUB_ENV
+        done < .env
       shell: bash
 
     - name: Setup Docker Compose
       uses: hoverkraft-tech/compose-action@v2.0.2
 
-    - name: Run SIPSSert tests
-      run: |
-        ./run-sipssert.sh
+    - name: Prepare SIPssert
+      uses: OpenSIPS/SIPssert/.github/actions/Prepare_SIPssert@main
+      with:
+        sipssert-repo: OpenSIPS/SIPSsert
+
+    - name: Run Test
+      uses: OpenSIPS/SIPssert/.github/actions/Run_Tests@main
+      with:
+        directory: sipssert
 
