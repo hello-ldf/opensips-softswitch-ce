@@ -1,0 +1,28 @@
+---
+name: Run SIPSsert tests
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 2 * * Mon'
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Docker Compose
+      uses: hoverkraft-tech/compose-action@v0.0.0
+      with:
+        compose-file: "./docker/docker-compose.yml"
+
+    - name: Run SIPSSert tests
+      run: |
+        ./run-sipssert.sh
+
