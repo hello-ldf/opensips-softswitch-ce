@@ -19,8 +19,6 @@ jobs:
 
     - name: Setup Docker Compose
       uses: hoverkraft-tech/compose-action@v2.0.2
-      with:
-        compose-file: "./docker/docker-compose.yml"
 
     - name: Run SIPSSert tests
       run: |
