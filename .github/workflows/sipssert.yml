@@ -17,6 +17,12 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
+    - name: Fix HOST_IP env
+      run: |
+        HOST_IP=$(hostname -I | cut -d ' ' -f 1)
+        sed "s/^HOST_IP=.*/HOST_IP=$HOST_IP/g" -i .env
+      shell: bash
+
     - name: Setup Docker Compose
       uses: hoverkraft-tech/compose-action@v2.0.2
 
