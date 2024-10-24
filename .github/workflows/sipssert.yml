@@ -23,7 +23,6 @@ jobs:
       run: |
         HOST_IP=$(hostname -I | cut -d ' ' -f 1)
         sed "s/^HOST_IP=.*/HOST_IP=$HOST_IP/g" -i .env
-        ls -l etc/
         while read line; do
           [ "$line" = "" ] && continue;
           echo "$line" >> $GITHUB_ENV
@@ -42,4 +41,5 @@ jobs:
       uses: OpenSIPS/SIPssert/.github/actions/Run_Tests@main
       with:
         directory: sipssert
+        tests: .
 
