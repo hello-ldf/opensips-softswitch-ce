@@ -32,7 +32,7 @@ that provides the following features:
 The simplest way to get the project running is to setup [Docker](https://www.docker.com/) on your host and then run:
 
 ``` shell
-git clone --recursive https://gitlab.opensips-solutions.com:44344/ce/softswitch.git
+git clone --recursive https://github.com/OpenSIPS/opensips-softswitch-ce.git
 cd softswitch
 docker compose up
 ```
@@ -67,7 +67,7 @@ For more information, please check the [Testing page](docs/testing.md).
 ## OpenSIPS
 
 OpenSIPS configuration is developed in a separate git repository that can be
-found [here](https://gitlab.opensips-solutions.com:44344/ce/softswitch-config.git).
+found [here](https://github.com/OpenSIPS/opensips-softswitch-ce-config.git).
 
 ## Homer
 
