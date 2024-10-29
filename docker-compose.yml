@@ -4,7 +4,7 @@ services:
       dockerfile_inline: |
         FROM mysql:latest
         # get the latest/newest opensips-mysql-dbschema package
-        RUN curl -s https://yum.opensips.org/3.6/nightly/el/9/x86_64/ | sed -n 's|.*href="\([^"]\+opensips-mysql-dbschema-[^"]\+\)">.*|https://yum.opensips.org/\1|p' | xargs rpm -i
+        RUN echo  "https://yum.opensips.org/3.6/nightly/el/9/x86_64/$(curl -s -L https://yum.opensips.org/3.6/nightly/el/9/x86_64 | grep -oE "opensips-mysql-dbschema[^r]*.rpm" | tail -1)" | xargs rpm -i
     container_name: mysql
     volumes:
       - ./etc/mysql:/docker-entrypoint-initdb.d
