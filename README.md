@@ -108,4 +108,4 @@ All documentation files (i.e. `.md` extension) are licensed under the [Creative 
 
 ![Creative Common Logo][Logo-CC_BY]
 
-© 2024 - OpenSIPS Solutions
+© 2024 - SIP Point Consulting SRL
