@@ -34,6 +34,10 @@ The simplest way to get the project running is to setup [Docker](https://www.doc
 ``` shell
 git clone --recursive https://github.com/OpenSIPS/opensips-softswitch-ce.git
 cd softswitch
+
+# configure your private IP address before launching the containers
+MY_IP=10.0.0.23; sed -i 's/HOST_IP=.*/HOST_IP='$MY_IP'/g' .env
+
 docker compose up
 ```
 
