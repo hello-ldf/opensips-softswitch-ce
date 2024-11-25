@@ -40,6 +40,6 @@ jobs:
     - name: Run Test
       uses: OpenSIPS/SIPssert/.github/actions/Run_Tests@main
       with:
-        directory: sipssert
+        directory: sipssert-tests
         tests: .
 
