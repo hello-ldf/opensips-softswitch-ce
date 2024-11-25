@@ -1,5 +1,7 @@
 # OpenSIPS SoftSwitch - Community Edition
 
+[![Run SIPSsert tests](https://github.com/OpenSIPS/opensips-softswitch-ce/actions/workflows/sipssert.yml/badge.svg)](https://github.com/OpenSIPS/opensips-softswitch-ce/actions/workflows/sipssert.yml)
+
 This project contains a fully functional OpenSIPS setup used as a SoftSwitch
 that provides the following features:
 
