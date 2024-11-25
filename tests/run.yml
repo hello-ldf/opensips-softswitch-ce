@@ -1,0 +1,9 @@
+---
+logging:
+  controller:
+    level: DEBUG
+#    console: true
+exclude:
+ - 11.gateway_call_did
+os:
+  - ubuntu-latest

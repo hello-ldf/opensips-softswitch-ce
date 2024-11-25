@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TESTS_DIR=${1:-sipssert}
+TESTS_DIR=${1:-tests}
 test -n "$1" && shift
 
 docker run --rm -t \
