@@ -17,7 +17,7 @@ tasks:
     port: {{ caller_port }}
 
   - name: Check callee not registered
-    type: opensips-cli
+    type: opensips-mi
     script: scripts/check-register.py
     args: {{ callee }}
 
@@ -35,8 +35,8 @@ tasks:
 
 cleanup_tasks:
   - name: Delete caller AOR
-    type: opensips-cli
-    args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
+    type: opensips-mi
+    args: ul_rm location {{ caller }}@{{ default_domain }}
   
   - name: Disable VM NOT FOUND for callee
     type: mysql-client

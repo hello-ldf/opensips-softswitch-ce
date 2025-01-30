@@ -45,5 +45,5 @@ cleanup_tasks:
     args: {{ caller }} {{ default_domain }}
 
   - name: Delete caller AOR
-    type: opensips-cli
-    args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
+    type: opensips-mi
+    args: ul_rm location {{ caller }}@{{ default_domain }}

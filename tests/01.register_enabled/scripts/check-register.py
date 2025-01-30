@@ -1,7 +1,10 @@
-from opensipscli import cli
+from opensips.mi import OpenSIPSMI, OpenSIPSMIException
 import sys
+import os
 
-handler = cli.OpenSIPSCLI()
+conn = os.getenv('CONN', 'http')
+url = os.getenv('URL', 'http://localhost:8888/mi')
+handler = OpenSIPSMI(conn=conn, url=url)
 
 if len(sys.argv) < 2:
     print("FAILED: Usage: check-register.py <username>")
@@ -9,7 +12,7 @@ if len(sys.argv) < 2:
 
 username = sys.argv[1]
 
-out = handler.mi("ul_dump")
+out = handler.execute('ul_dump')
 l = len(out['Domains'][0]['AORs'])
 
 found = False

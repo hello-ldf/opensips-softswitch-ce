@@ -6,8 +6,8 @@ init_tasks:
     args: {{ default_domain }}
   
   - name: Reload domains
-    type: opensips-cli
-    args: -d -x mi domain_reload
+    type: opensips-mi
+    args: domain_reload
     require:
       after:
         task: Add test domain
@@ -95,8 +95,8 @@ init_tasks:
           task: Add gateway 2
   
   - name: MI reload dr
-    type: opensips-cli
-    args: -d -x mi dr_reload
+    type: opensips-mi
+    args: dr_reload
     require:
       - after: Add rule
 
@@ -118,8 +118,8 @@ cleanup_tasks:
     args: 'sip:{{ gateway2_ip }}:{{ gateway2_port }}'
 
   - name: MI reload gateway after delete
-    type: opensips-cli
-    args: -d -x mi dr_reload
+    type: opensips-mi
+    args: dr_reload
     require:
       - after: Delete rule
       - after: Delete gateway 1
@@ -143,16 +143,16 @@ cleanup_tasks:
     args: -d -x user delete {{ cf_user }}@{{ default_domain }}
 
   - name: Delete caller AOR
-    type: opensips-cli
-    args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
+    type: opensips-mi
+    args: ul_rm location {{ caller }}@{{ default_domain }}
 
   - name: Delete callee AOR
-    type: opensips-cli
-    args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
+    type: opensips-mi
+    args: ul_rm location {{ callee }}@{{ default_domain }}
   
   - name: Delete call forward user AOR
-    type: opensips-cli
-    args: -d -x mi ul_rm location {{ cf_user }}@{{ default_domain }}
+    type: opensips-mi
+    args: ul_rm location {{ cf_user }}@{{ default_domain }}
 
   - name: Delete test domain
     type: mysql-client
@@ -163,26 +163,33 @@ cleanup_tasks:
       - after: Delete callee
   
   - name: Reload domains
-    type: opensips-cli
-    args: -d -x mi domain_reload
+    type: opensips-mi
+    args: domain_reload
     require:
       after: Delete test domain
 
 
 defaults:
-  opensips-cli:
-    mi_ip: {{ opensips_ip }}
-    options:
-      database_user_url: mysql://{{ mysql_user }}:{{ mysql_password }}@{{ opensips_ip }}/{{ database }}
   uac-sipp:
     proxy: {{ opensips_ip }}:{{ opensips_port }}
     keys:
       domain: {{ default_domain }}
       caller: {{ caller }}
       callee: {{ callee }}
+  opensips-cli:
+    mi_ip: {{ mi_ip }}
+    options:
+      database_user_url: mysql://{{ mysql_user }}:{{ mysql_password }}@{{ mysql_ip }}/{{ database }}
+    network: softswitch-br
+  opensips-mi:
+    mi_ip: {{ mi_ip }}
+    env:
+      CONN: http
+      URL: http://{{ mi_ip }}:8888/mi
+    network: softswitch-br    
   mysql-client:
-    host: {{ opensips_ip }}
-    port: {{ mysql_port }}
+    host: {{ mysql_ip }}
     user: {{ mysql_user }}
     password: {{ mysql_password }}
     database: {{ database }}
+    network: softswitch-br

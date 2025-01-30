@@ -30,7 +30,7 @@ tasks:
     port: {{ callee_port }}
 
   - name: MI check Not Registered caller
-    type: opensips-cli
+    type: opensips-mi
     script: scripts/check-register.py
     args: {{ caller }}
     require:
@@ -39,7 +39,7 @@ tasks:
         wait: 1
 
   - name: MI check Not Registered callee
-    type: opensips-cli
+    type: opensips-mi
     script: scripts/check-register.py
     args: {{ callee }}
     require:

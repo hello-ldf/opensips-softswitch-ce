@@ -50,12 +50,12 @@ tasks:
   
 cleanup_tasks:
   - name: Delete caller AOR
-    type: opensips-cli
-    args: -d -x mi ul_rm location {{ caller }}@{{ default_domain }}
+    type: opensips-mi
+    args: ul_rm location {{ caller }}@{{ default_domain }}
   
   - name: Delete callee AOR
-    type: opensips-cli
-    args: -d -x mi ul_rm location {{ callee }}@{{ default_domain }}
+    type: opensips-mi
+    args: ul_rm location {{ callee }}@{{ default_domain }}
 
   - name: Disable VM BUSY for callee
     type: mysql-client
