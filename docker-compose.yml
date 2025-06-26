@@ -3,12 +3,13 @@ services:
     build:
       dockerfile_inline: |
         FROM mysql:latest
-        # get the latest/newest opensips-mysql-dbschema package
-        RUN echo  "https://yum.opensips.org/3.6/nightly/el/9/x86_64/$(curl -s -L https://yum.opensips.org/3.6/nightly/el/9/x86_64 | grep -oE "opensips-mysql-dbschema[^r]*.rpm" | tail -1)" | xargs rpm -i
     container_name: mysql
     volumes:
+      - ./etc/mysql/dbschema:/usr/share/opensips/mysql
       - ./etc/mysql:/docker-entrypoint-initdb.d
       - db:/var/lib/mysql
+    ports:
+      - 3306:3306
     env_file:
       - .env
     environment:
@@ -24,13 +25,24 @@ services:
         ipv4_address: ${MYSQL_IP}
 
   opensips:
-    image: opensips/opensips:softswitch-ce
+    build:
+      dockerfile_inline: |
+        FROM opensips/opensips:3.5
+        RUN sed -i 's/deb.debian.org/mirrors.huaweicloud.com/g' /etc/apt/sources.list
+        RUN apt-get update && apt install -y curl
+        RUN curl https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg \
+          && echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bullseye 3.5-releases" >/etc/apt/sources.list.d/opensips.list
+        RUN apt update
+        RUN apt install -y m4 gettext-base \
+          opensips-mysql-module opensips-auth-modules opensips-http-modules \
+          opensips-tls-module opensips-dialplan-module opensips-presence-modules
     container_name: opensips
     volumes:
       - ./etc/opensips:/etc/opensips
     ports:
       - 5060:5060/udp
       - 5060:5060/tcp
+      - 8080:8080/tcp
     expose:
       - 9060/tcp
     env_file:
@@ -67,17 +79,33 @@ services:
       localnetwork:
         ipv4_address: ${CP_IP}
 
-  rtpproxy:
-    image: sippylabs/rtpproxy
-    container_name: rtpproxy
+  rtpengine:
+    build:
+      dockerfile_inline: |
+        FROM debian:bookworm
+        ENV DEBIAN_FRONTEND=noninteractive
+        RUN sed -i 's/deb.debian.org/mirrors.huaweicloud.com/g' /etc/apt/sources.list.d/debian.sources
+        RUN apt-get update && apt-get install -y wget gnupg2 curl
+        RUN wget https://rtpengine.dfx.at/latest/pool/main/r/rtpengine-dfx-repo-keyring/rtpengine-dfx-repo-keyring_1.0_all.deb \
+          && dpkg -i rtpengine-dfx-repo-keyring_1.0_all.deb \
+          && echo "deb [signed-by=/usr/share/keyrings/dfx.at-rtpengine-archive-keyring.gpg] https://rtpengine.dfx.at/12.5 bookworm main" > /etc/apt/sources.list.d/dfx.at-rtpengine.list
+        RUN apt-get update \
+          && apt-get install -y rtpengine
+        RUN apt-get clean \
+          && rm -rf /var/lib/apt/lists/* rtpengine-dfx-repo-keyring_1.0_all.deb
+    container_name: rtpengine
+    network_mode: host
+    privileged: true
     env_file:
       - .env
-    ports:
-      - "${MINPORT}-${MAXPORT}:${MINPORT}-${MAXPORT}/udp"
-    networks:
-      localnetwork:
-        ipv4_address: ${RTPPROXY_IP}
-    command: -s udp:${RTPPROXY_IP}:${RTPPROXY_PORT} -l ${RTPPROXY_IP} -m ${MINPORT} -M ${MAXPORT} -A ${HOST_IP}
+    command: >
+      rtpengine
+      --interface=${HOST_IP}
+      --listen-ng=0.0.0.0:${RTPPROXY_PORT}
+      --port-min=${MINPORT}
+      --port-max=${MAXPORT}
+      --log-level=7
+      --foreground
 
   freeswitch:
     image: opensips/freeswitch-ce
