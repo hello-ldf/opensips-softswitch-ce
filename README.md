@@ -1,117 +1,157 @@
-# OpenSIPS SoftSwitch - Community Edition
+# OpenSIPS SoftSwitch 自定义分支
 
-[![Run SIPSsert tests](https://github.com/OpenSIPS/opensips-softswitch-ce/actions/workflows/sipssert.yml/badge.svg)](https://github.com/OpenSIPS/opensips-softswitch-ce/actions/workflows/sipssert.yml)
+本项目基于官方 [OpenSIPS/opensips-softswitch-ce](https://github.com/OpenSIPS/opensips-softswitch-ce) 分支，进行了以下定制化修改，以满足更好的兼容性与实际业务需求，尤其是支持 WebRTC（JsSIP）通讯。
 
-This project contains a fully functional OpenSIPS setup used as a SoftSwitch
-that provides the following features:
+---
 
-* SIP Proxy with **support for TCP and UDP**
-* **topology hiding** for all calls
-* **dialplans** for user and did formats
-* star codes to **enable/disable DND**
-* **call forward** URIs for each user:
-    * **always forward**
-    * **busy forward**
-    * **no answer forward**
-    * **not found forward**
-* **ACLs** for each user:
-	* **User Enabled**
-	* **Force NAT**
-	* **Enable PSTN**
-	* **DND**
-	* **VM Enabled**
-	* **VM Permanent Redirect**
-	* **VM Redirect Not Found**
-	* **VM Redirect on Busy**
-	* **VM Redirect on No Answer**
-* **RTPProxy** for voice traffic
-* **FreeSWITCH** for media services:
-    * **voicemails**
-    * **announcements**
+## ✨ 自定义内容说明
 
-## Getting Started
+### ✅ 1. 修复数据库脚本版本不匹配问题
 
-The simplest way to get the project running is to setup [Docker](https://www.docker.com/) on your host and then run:
+* 官方使用的是 RPM 安装方式加载数据库脚本，脚本版本与实际 OpenSIPS 程序版本不匹配，导致初始化失败。
+* 自定义版本中：
 
-``` shell
-git clone --recursive https://github.com/OpenSIPS/opensips-softswitch-ce.git
-cd softswitch
+  * 移除 RPM 安装方式；
+  * 使用 OpenSIPS 3.5 版本的 MySQL 初始化脚本；
+  * 挂载脚本并直接初始化数据库；
+  * 映射数据库端口，便于调试与访问。
 
-# configure your private IP address before launching the containers
-MY_IP=10.0.0.23; sed -i 's/HOST_IP=.*/HOST_IP='$MY_IP'/g' .env
+### ✅ 2. 替换 RTPProxy 为 RTPengine
 
-docker compose up
-```
+* 为了兼容 WebRTC（如 JsSIP），将原本使用的 RTPProxy 替换为 RTPengine；
+* 调整相关数据库表结构、配置与 OpenSIPS 脚本逻辑；
+* 配置了 `rtpengine_offer` 和 `rtpengine_answer` 的参数，以支持 SDP 协议转换及 ICE、RTCP-MUX 等选项。
 
-For more information about setup, please check the [Setup
-page](docs/setup.md).
+---
 
-Once everything is initialized, you should be able to access the OpenSIPS
-Control Panel using the following credentials:
+## 🧱 Docker Compose 结构变更
 
-* URL: [http://localhost/cp](http://localhost/cp)
-* User: `admin`
-* Password: `opensips`
+### MySQL 容器
 
-For more information about provisioning, please check the [Provisioning
-page](docs/provisioning.md).
+* **变更**：
+  * 移除原有的 RPM 安装脚本；
+  * 使用挂载方式加载 `3.5` 脚本；
+  * 映射端口供外部访问；
 
+### OpenSIPS 容器
 
-At this point you can follow the [Getting Started](docs/getting-started.md)
-tutorial to test the OpenSIPS SoftSwitch Community Edition.
+* **变更**：
+  * 自行 build 镜像；
+  * 增加 WebSocket (`8080`) 端口映射；
+  * 使用 `proto_ws.so` 模块启用 WebSocket；
 
-## Testing
+### OpenSIPS-CP 容器
 
-OpenSIPS SoftwSwitch comes with a set of tests that you can run once the setup
-is complete:
-``` shell
-./run-sipssert.sh
-```
+* **变更**：
 
-For more information, please check the [Testing page](docs/testing.md).
+  * 默认 `80` 端口可能已被使用，做了端口调整；
 
-## OpenSIPS
+### RTPengine 替换 RTPProxy
 
-OpenSIPS configuration is developed in a separate git repository that can be
-found [here](https://github.com/OpenSIPS/opensips-softswitch-ce-config.git).
+* 替换原来的 `rtpproxy` 容器；
+* 使用新的 `rtpengine` 镜像并做相应配置；
 
-## Homer
+---
 
-In order to be able to visualize SoftSwitch call flows, it is recommended to
-setup the [Homer](https://github.com/sipcapture/homer) tool by following [these](docs/homer.md)
-steps.
+## ⚙️ 环境变量配置（`.env`）
 
-## Documentation
+| 变量名              | 描述                 |
+| ---------------- | ------------------ |
+| `HOST_IP`        | 本机局域网 IP，用于上网与 SDP |
+| `DEFAULT_DOMAIN` | SIP 域名，建议填公网 IP    |
 
-Documentation pages contain the following topics:
+---
 
-* [Setup](docs/setup.md) - contains information about how to install and setup
-* [Getting Started](docs/getting-started.md) - show how you can use the
-SoftSwitch to test certain scenarios
-* [Components](docs/components.md) - list of components used in the project
-* [Provisioning](docs/provisioning.md) - useful information about provisioning
-the platform
-* [Testing](docs/testing.md) - information about testing the platform
-* [Homer](docs/homer.md) - information about setting up Homer server
-* [Devel](docs/devel.md) - information about development
+## 🔧 配置变更说明
 
+### `etc/mysql/` 脚本变更
 
-## Contribute
+* `00_config_db.sh` 中使用 `rtpengine-create.sql` 替换 `rtpproxy-create.sql`
+* `10_config_rtpproxy.sh` 中：
 
-This project is Community driven, therefore any contribution is welcome. Feel
-free to open a pull request for any fix/feature you find useful.
+  * 表名改为：`rtpengine`
+  * 字段改为：`socket`
 
-## License
+### `etc/opensips-cp/image/modules.inc.php`
 
-<!-- License source -->
-[License-GPLv3]: https://www.gnu.org/licenses/gpl-3.0.en.html "GNU GPLv3"
-[Logo-CC_BY]: https://i.creativecommons.org/l/by/4.0/88x31.png "Creative Common Logo"
-[License-CC_BY]: https://creativecommons.org/licenses/by/4.0/legalcode "Creative Common License"
+* 注释掉 `rtpproxy` 模块
+* 打开 `rtpengine` 模块
 
-The `OpenSIPS SoftSwitch Community Edition` source code is licensed under the [GNU General Public License v3.0][License-GPLv3]
+### `etc/opensips/opensips.cfg` 关键改动
 
-All documentation files (i.e. `.md` extension) are licensed under the [Creative Common License 4.0][License-CC_BY]
+* 添加 WebSocket 监听：
 
-![Creative Common Logo][Logo-CC_BY]
+  ```cfg
+  socket=ws:${OPENSIPS_IP}:5066 as ${HOST_IP} use_workers 5
+  loadmodule "proto_ws.so"
+  ```
 
-© 2024 - SIP Point Consulting SRL
+* 加载 `rtpengine` 模块，配置数据库连接：
+
+  ```cfg
+  loadmodule "rtpengine.so"
+  modparam("rtpengine", "db_url", "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_IP}/${MYSQL_DATABASE}")
+  ```
+
+* SIP/WebSocket 协议判断逻辑：
+
+  ```cfg
+  if ($socket_in(proto) == "WS")
+      setflag("SRC_WS");
+
+  if (isflagset("SRC_WS"))
+      setbflag("DST_WS");
+  ```
+
+* 注册路由限制单点登录：
+
+  ```cfg
+  save("location", "max-contacts=1,force-registration")
+  ```
+
+* 替换 `rtpproxy_offer` 为 `rtpengine_offer`：
+
+  ```cfg
+  if(rtpengine_offer("$var(rtpengine_flags)"))
+  ```
+
+* 替换 `rtpproxy_answer` 为 `rtpengine_answer`：
+
+  ```cfg
+  rtpengine_answer("$var(rtpengine_flags)");
+  ```
+
+* 替换 `rtpproxy_unforce()` 为：
+
+  ```cfg
+  rtpengine_delete();
+  ```
+
+---
+
+## 🚀 启动方式
+
+1. 克隆项目：
+
+   ```bash
+   git clone --recursive https://github.com/hello-ldf/opensips-softswitch-ce.git
+   cd opensips-softswitch-ce
+   ```
+
+2. 配置 `.env` 文件（设置 IP 和域名）
+
+3. 构建并启动服务：
+
+   ```bash
+   docker compose up
+   ```
+
+---
+
+## 📌 备注
+
+* 本分支修复了官方版本中数据库脚本与程序版本不匹配的问题（后续可能官方会修复此问题，建议关注官方更新）
+* 替换为 RTPengine 是为了支持 WebRTC 场景（如 JsSIP）；
+
+---
+
