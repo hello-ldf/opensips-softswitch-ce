@@ -100,12 +100,15 @@ services:
       - .env
     command: >
       rtpengine
-      --interface=${HOST_IP}
+      --interface=${HOST_IP}!${DEFAULT_DOMAIN}
       --listen-ng=0.0.0.0:${RTPPROXY_PORT}
       --port-min=${MINPORT}
       --port-max=${MAXPORT}
       --log-level=7
       --foreground
+      --table=0
+    # docker 里内核转发有时报错，报错把table改-1
+    # 当然也可以不用 docker 直接宿主机安装
 
   freeswitch:
     image: opensips/freeswitch-ce

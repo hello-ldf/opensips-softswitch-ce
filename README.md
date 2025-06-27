@@ -50,6 +50,10 @@
 
 * 替换原来的 `rtpproxy` 容器；
 * 使用新的 `rtpengine` 镜像并做相应配置；
+* 用到了华为云镜像，但是替换路径的时候，
+  有时候是 /etc/apt/sources.list，
+  有时候是 /etc/apt/sources.list.d/debian.sources，
+  报错的话，自行换着试试。
 
 ---
 
@@ -134,7 +138,7 @@
 1. 克隆项目：
 
    ```bash
-   git clone --recursive https://github.com/hello-ldf/opensips-softswitch-ce.git
+   git clone https://github.com/hello-ldf/opensips-softswitch-ce.git
    cd opensips-softswitch-ce
    ```
 
@@ -143,6 +147,7 @@
 3. 构建并启动服务：
 
    ```bash
+   chmod +x ./etc/opensips/substenv.sh
    docker compose up
    ```
 
