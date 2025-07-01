@@ -156,7 +156,32 @@
 ## 📌 备注
 
 * 本分支修复了官方版本中数据库脚本与程序版本不匹配的问题（后续可能官方会修复此问题，建议关注官方更新）
+
 * 替换为 RTPengine 是为了支持 WebRTC 场景（如 JsSIP）；
+
+* docker 启动时如果没权限，可以先试试授权
+  chmod -R 755 ./etc
+
+* 我这里用到了证书，不需要的话去掉就行
+  ```cfg
+  << opensips.cfg >>
+  
+  socket=ws:0.0.0.0:443 as ${DEFAULT_DOMAIN} use_workers 5
+  
+  # load our certificate management module
+  loadmodule "tls_mgm.so"
+  
+  loadmodule "proto_tls.so"
+  loadmodule "proto_wss.so"
+  
+  # modparam our certificate information
+  modparam("tls_mgm", "server_domain", "${DEFAULT_DOMAIN}")
+  modparam("tls_mgm", "certificate","/etc/opensips/ssl/key.pem")
+  modparam("tls_mgm", "private_key","/etc/opensips/ssl/cert.pem")
+  
+  ```
+
+  
 
 ---
 

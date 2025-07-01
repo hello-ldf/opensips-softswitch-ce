@@ -20,6 +20,7 @@ services:
       timeout: 1s
       retries: 5
       start_period: 20s
+    privileged: true
     networks:
       localnetwork:
         ipv4_address: ${MYSQL_IP}
@@ -33,16 +34,21 @@ services:
         RUN curl https://apt.opensips.org/opensips-org.gpg -o /usr/share/keyrings/opensips-org.gpg \
           && echo "deb [signed-by=/usr/share/keyrings/opensips-org.gpg] https://apt.opensips.org bullseye 3.5-releases" >/etc/apt/sources.list.d/opensips.list
         RUN apt update
+        RUN apt install -y rsyslog supervisor
         RUN apt install -y m4 gettext-base \
           opensips-mysql-module opensips-auth-modules opensips-http-modules \
-          opensips-tls-module opensips-dialplan-module opensips-presence-modules
+          opensips-tls-openssl-module opensips-tls-module opensips-wss-module opensips-dialplan-module opensips-presence-modules
     container_name: opensips
     volumes:
+      - ./etc/opensips/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+      - ./etc/opensips/rsyslog.conf:/etc/rsyslog.d/opensips.conf
       - ./etc/opensips:/etc/opensips
+      - /etc/localtime:/etc/localtime:ro
     ports:
       - 5060:5060/udp
       - 5060:5060/tcp
       - 8080:8080/tcp
+      - 443:443/tcp
     expose:
       - 9060/tcp
     env_file:
@@ -50,8 +56,15 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-    command:
-      - -p /etc/opensips/substenv.sh
+    privileged: true
+    mem_limit: 2g
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    entrypoint: ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+    # command:
+    #   - -p /etc/opensips/substenv.sh
     networks:
       localnetwork:
         ipv4_address: ${OPENSIPS_IP}
@@ -64,7 +77,7 @@ services:
     env_file:
       - .env
     ports:
-      - 80:80
+      - 80:80/tcp
     expose:
       - 9060/tcp
     depends_on:
@@ -106,13 +119,14 @@ services:
       --port-max=${MAXPORT}
       --log-level=7
       --foreground
-      --table=0
+      --table=-1
     # docker 里内核转发有时报错，报错把table改-1
     # 当然也可以不用 docker 直接宿主机安装
 
   freeswitch:
     image: opensips/freeswitch-ce
     container_name: freeswitch
+    privileged: true
     env_file:
       - .env
     volumes:

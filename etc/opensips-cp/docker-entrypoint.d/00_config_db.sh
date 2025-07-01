@@ -1,5 +1,7 @@
 #!/bin/bash
 
+chmod -R 755 /var/www/html/opensips-cp/config
+
 cd "$(dirname "$0")"
 . functions
 
