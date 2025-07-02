@@ -1,10 +1,10 @@
-# OpenSIPS SoftSwitch 自定义分支
+# OpenSIPS SoftSwitch 优化分支
 
 本项目基于官方 [OpenSIPS/opensips-softswitch-ce](https://github.com/OpenSIPS/opensips-softswitch-ce) 分支，进行了以下定制化修改，以满足更好的兼容性与实际业务需求，尤其是支持 WebRTC（JsSIP）通讯。
 
 ---
 
-## ✨ 自定义内容说明
+## ✨ 调整内容说明
 
 ### ✅ 1. 修复数据库脚本版本不匹配问题
 
@@ -181,7 +181,52 @@
   
   ```
 
-  
+
+
+
+## 如何批量加用户？
+
+```mysql
+# 解密
+SELECT username, AES_DECRYPT(FROM_BASE64(email_address), 'Key')
+from subscriber;
+
+# 批量插入
+-- 建立临时表，用于存放临时生成的用户信息
+CREATE TEMPORARY TABLE tmp_users (
+  username VARCHAR(50),
+  domain VARCHAR(100),
+  pwd VARCHAR(64)
+);
+TRUNCATE table tmp_users;
+-- 生成用户信息
+INSERT INTO tmp_users (username, domain, pwd)
+SELECT
+  CONCAT('user', LPAD(seq + 1010, 4, '0')),
+  'sip.domain',
+  REPLACE(UUID(), '-', '')
+FROM (
+  SELECT 1 AS seq UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL
+  SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL
+  SELECT 10
+) AS numbers;
+-- 加密存入
+INSERT INTO subscriber (username, domain, password, email_address, ha1, ha1_sha256, ha1_sha512t256, acls)
+SELECT
+  username,
+  domain,
+  '',
+  TO_BASE64(AES_ENCRYPT(pwd, 'Key')) AS encrypted_pwd,
+  MD5(CONCAT(username, ':', domain, ':', pwd)) AS md5,
+  SHA2(CONCAT(username, ':', domain, ':', pwd), 256) AS sha256,
+  SUBSTRING(SHA2(CONCAT(username, ':', domain, ':', pwd), 512), 1, 64) AS sha512_64,
+  'E' AS extra
+FROM tmp_users;
+```
+
+
+
+
 
 ---
 
